@@ -1,0 +1,480 @@
+# ----------------------------------------------------------------------
+# Copyright 2017-2020 Airinnova AB and the Airfoils authors
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ----------------------------------------------------------------------
+
+# Authors:
+# * Aaron Dettmann
+
+"""
+Provides tools to create and modify airfoil objects
+
+Developed for Airinnova AB, Stockholm, Sweden.
+"""
+
+from datetime import datetime
+import os
+import re
+
+import numpy as np
+from scipy.interpolate import interp1d
+from scipy.differentiate import derivative
+import matplotlib.pyplot as plt
+
+POINTS_AIRFOIL = 200
+
+
+class NACADefintionError(Exception):
+	"""Raised when the NACA identifier number is not valid"""
+
+	pass
+
+
+class Airfoil:
+	def __init__(self, upper, lower, meta):
+		"""
+		Main constructor method
+
+		Args:
+			:upper: 2 x N array with x- and y-coordinates of the upper side
+			:lower: 2 x N array with x- and y-coordinates of the lower side
+
+		Note:
+			* During initialisation data points are automatically ordered
+			and normalised if necessary.
+		"""
+		self.meta = meta
+		####
+		self._max_extrados = 0
+		####
+		# Always use Numpy arrays
+		upper = np.array(upper, dtype=float)
+		lower = np.array(lower, dtype=float)
+
+		# Unpack coordinates
+		self._x_upper, self._y_upper = upper
+		self._x_lower, self._y_lower = lower
+
+		self._max_extrados = np.max(self._y_upper)
+		# Process coordinates
+		self.norm_factor = 1
+		self._order_data_points()
+		self._normalise_data_points()
+
+		# Remove duplicate points from coordinate vectors. x-values must be
+		# unique. Values passed to iterp1d() must be monotonically increasing.
+		self._x_upper, idx_keep = np.unique(self._x_upper, return_index=True)
+		self._y_upper = self._y_upper[idx_keep]
+
+		self._x_lower, idx_keep = np.unique(self._x_lower, return_index=True)
+		self._y_lower = self._y_lower[idx_keep]
+
+		# Make interpolation functions for 'y_upper' and 'y_lower'
+		self._y_upper_interp = interp1d(
+			self._x_upper,
+			self._y_upper,
+			kind='cubic',
+			bounds_error=False,
+			fill_value="extrapolate"
+		)
+
+		self._y_lower_interp = interp1d(
+			self._x_lower,
+			self._y_lower,
+			kind='cubic',
+			bounds_error=False,
+			fill_value="extrapolate"
+		)
+
+		self.cuerda = 1
+		self.aoa = 0
+
+	def __str__(self):
+		return self.__class__.__name__ + "(upper, lower)"
+
+	def __repr__(self):
+		return self.__class__.__name__ + "(upper, lower)"
+
+	def y_upper(self, x):
+		return self._y_upper_interp(x)
+
+	def y_lower(self, x):
+		return self._y_lower_interp(x)
+
+	def max_extrados(self):
+		return self._max_extrados * self.cuerda
+
+	@classmethod
+	def NACA4(cls, naca_digits, n_points=POINTS_AIRFOIL):
+		"""
+		Create an airfoil object from a NACA 4-digit series definition
+
+		Note:
+			* This is an alternative constructor method
+
+		Args:
+			:naca_digits: String like '4412'
+			:points: Total number of points used to create the airfoil
+
+		Returns:
+			:airfoil: New airfoil instance
+		"""
+
+		re_4digits = re.compile(r"^\d{4}$")
+
+		if re_4digits.match(naca_digits):
+			p = float(naca_digits[0])/10
+			m = float(naca_digits[1])/100
+			xx = float(naca_digits[2:4])/100
+		else:
+			raise NACADefintionError("Identifier not recognised as valid NACA 4 definition")
+
+		upper, lower = gen_NACA4_airfoil(p, m, xx, n_points)
+		return cls(upper, lower)
+
+	@classmethod
+	def morph_new_from_two_foils(cls, airfoil1, airfoil2, eta, n_points):
+		"""
+		Create an airfoil object from a linear interpolation between two
+		airfoil objects
+
+		Note:
+			* This is an alternative constructor method
+
+		Args:
+			:airfoil1: Airfoil object at eta = 0
+			:airfoil2: Airfoil object at eta = 1
+			:eta: Relative position where eta = [0, 1]
+			:n_points: Number of points for new airfoil object
+
+		Returns:
+			:airfoil: New airfoil instance
+		"""
+
+		if not 0 <= eta <= 1:
+			raise ValueError(f"'eta' must be in range [0,1], given eta is {float(eta):.3f}")
+
+		x = np.linspace(0, 1, n_points)
+
+		y_upper_af1 = airfoil1.y_upper(x)
+		y_lower_af1 = airfoil1.y_lower(x)
+		y_upper_af2 = airfoil2.y_upper(x)
+		y_lower_af2 = airfoil2.y_lower(x)
+
+		y_upper_new = y_upper_af1*(1 - eta) + y_upper_af2*eta
+		y_lower_new = y_lower_af1*(1 - eta) + y_lower_af2*eta
+
+		upper = np.array([x, y_upper_new])
+		lower = np.array([x, y_lower_new])
+
+		return cls(upper, lower)
+
+	@property
+	def all_points(self):
+		"""
+		Returns a single 2 x N array with x and y-coordinates in separate columns
+		[
+			[x0, x1, x2, ...]		(?)
+			[y0, y1, y2, ...]
+		]
+		"""
+
+		all_points = np.array([
+			np.concatenate((self._x_upper, self._x_lower)),
+			np.concatenate((self._y_upper, self._y_lower))
+		])
+		return all_points
+
+	def _order_data_points(self):
+		"""
+		Order the data points so that x-coordinate starts at 0
+		"""
+
+		if self._x_upper[0] > self._x_upper[-1]:
+			self._x_upper = np.flipud(self._x_upper)
+			self._y_upper = np.flipud(self._y_upper)
+
+		if self._x_lower[0] > self._x_lower[-1]:
+			self._x_lower = np.flipud(self._x_lower)
+			self._y_lower = np.flipud(self._y_lower)
+
+	def _normalise_data_points(self):
+		"""
+		Normalise data points so that x ranges from 0 to 1
+		"""
+
+		self.norm_factor = abs(self._x_upper[-1] - self._x_upper[0])
+
+		self._x_upper /= self.norm_factor
+		self._y_upper /= self.norm_factor
+		self._x_lower /= self.norm_factor
+		self._y_lower /= self.norm_factor
+
+	def plot(self, *, show=True, save=False, settings={}):
+		"""
+		Plot the airfoil and camber line
+
+		Note:
+			* 'show' and/or 'save' must be True
+
+		Args:
+			:show: (bool) Create an interactive plot
+			:save: (bool) Save plot to file
+			:settings: (bool) Plot settings
+
+		Plot settings:
+			* Plot settings must be a dictionary
+			* Allowed keys:
+
+			'points': (bool) ==> Plot coordinate points
+			'camber': (bool) ==> Plot camber
+			'chord': (bool) ==> Plot chord
+			'path': (str) ==> Output path (directory path, must exists)
+			'file_name': (str) ==> Full file name
+
+		Returns:
+			None or 'file_name' (full path) if 'save' is True
+		"""
+
+		fig = plt.figure()
+		ax = fig.add_subplot(1, 1, 1)
+		ax.set_xlim([0, 1])
+		ax.set_xlabel('x')
+		ax.set_ylabel('y')
+		ax.axis('equal')
+		ax.grid()
+
+		ax.plot(self._x_upper, self._y_upper, '-', color='blue')
+		ax.plot(self._x_lower, self._y_lower, '-', color='green')
+
+		if settings.get('points', False):
+			ax.plot(self.all_points[0, :], self.all_points[1, :], '.', color='grey')
+
+		if settings.get('camber', False):
+			x = np.linspace(0, 1, int(POINTS_AIRFOIL/2))
+			ax.plot(x, self.camber_line(x), '--', color='red')
+
+		if settings.get('chord', False):
+			pass
+
+		plt.subplots_adjust(left=0.10, bottom=0.10, right=0.98, top=0.98, wspace=None, hspace=None)
+
+		if show:
+			plt.show()
+
+		if save:
+			path = settings.get('path', '.')
+			file_name = settings.get('file_name', False)
+
+			if not file_name:
+					now = datetime.strftime(datetime.now(), format='%F_%H%M%S')
+					file_type = 'png'
+					file_name = f'airfoils_{now}.{file_type}'
+
+			fig.savefig(os.path.join(path, file_name))
+			return file_name
+
+	def camber_line(self, x):
+		"""
+		Compute the camber line
+
+		Method 1: y_camber = (y_upper + y_lower)/2
+
+		Args:
+			:x: Relative chordwise coordinate ranging from 0 to 1
+
+		Returns:
+			:camber_line: y-coordinates at given x positions
+		"""
+
+		return (self.y_upper(x) + self.y_lower(x))/2
+
+	def camber_line_angle(self, x):
+		"""
+		Compute the camber line angle
+
+		Args:
+			:x: Relative chordwise coordinate ranging from 0 to 1
+
+		Returns:
+			:theta: Camber line angle at given x positions
+		"""
+
+	########################
+		x = np.asarray(x)
+		scalar_input = False
+
+		if x.ndim == 0:
+			x = x[None]  # Make 1D array
+			scalar_input = True
+	########################
+
+		dydx = derivative(self.camber_line, x, dx=1e-12)
+		theta = np.rad2deg(np.arctan(dydx))
+		theta = np.array([0 if abs(x) > 50 else x for x in theta])
+
+	########################
+		if scalar_input:
+			return np.squeeze(theta)
+		return theta
+	########################
+
+	#### Hugo P. [
+	"""
+			# Unpack coordinates
+			self._x_upper, self._y_upper = upper
+			self._x_lower, self._y_lower = lower
+	"""
+	def flip(self):
+		new_x_upper = self._x_lower
+		new_y_upper = -self._y_lower
+		new_x_lower = self._x_upper
+		new_y_lower = -self._y_upper
+
+		self._x_upper = new_x_upper
+		self._y_upper = new_y_upper
+		self._x_lower = new_x_lower
+		self._y_lower = new_y_lower
+
+	def escalar(self, factor):
+		self.cuerda *= factor
+		self._x_upper *= factor
+		self._y_upper *= factor
+		self._x_lower *= factor
+		self._y_lower *= factor
+
+	def translate(self, x, y):
+		self._x_upper += x
+		self._y_upper += y
+		self._x_lower += x
+		self._y_lower += y
+
+	def rotar(self, alfa):
+		a = np.deg2rad(alfa)
+		upper = np.array([
+			self._x_upper,
+			self._y_upper
+		])
+		lower = np.array([
+			self._x_lower,
+			self._y_lower
+		])
+		# Matriz de rotación (2x2) para el ángulo de ataque "alfa"
+		MatRot = np.array([
+			(np.cos(a), -np.sin(a)),
+			(np.sin(a),  np.cos(a))
+		])
+
+		new_upper = np.matmul(MatRot, upper)
+		new_lower = np.matmul(MatRot, lower)
+		self._x_upper, self._y_upper = new_upper
+		self._x_lower, self._y_lower = new_lower
+
+	def setAOA(self, alfa):
+		self.aoa = alfa
+		self.rotar(alfa)
+
+	def exportar(self, separador=", ", comaDec=False, coordz=True, toFile=True, filename=""):
+		result = "PLACA\n"
+		#print(len(self._y_lower))
+		#print(len(self._y_upper))
+		### Back to front arriba y luego
+		### front to back abajo
+		for i in reversed(range(0, len(self._x_upper))):
+			result += str(self._x_upper[i]) + separador + str(self._y_upper[i])
+			if coordz:
+				result += separador + "0.0000"
+			result += "\n"
+		for i in range(0, len(self._x_lower)):
+			result += str(self._x_lower[i]) + separador + str(self._y_lower[i])
+			if coordz:
+				result += separador + "0.0000"
+			result += "\n"
+
+		if comaDec:
+			result = result.replace(".", ",")
+
+		if toFile:
+			if filename == "":
+				raise NameError("Filename not provided")
+
+			with open(filename, "w") as file:
+				file.write(result)
+
+			return "[Exported to " + filename + "]"
+		else:
+			return result
+	### ] Hugo P.
+
+def gen_NACA4_airfoil(p, m, xx, n_points):
+	"""
+	Generate upper and lower points for a NACA 4 airfoil
+
+	Args:
+		:p:
+		:m:
+		:xx:
+		:n_points:
+
+	Returns:
+		:upper: 2 x N array with x- and y-coordinates of the upper side
+		:lower: 2 x N array with x- and y-coordinates of the lower side
+	"""
+
+	def yt(xx, xsi):
+		# Thickness distribution
+
+		a0 = 1.4845
+		a1 = 0.6300
+		a2 = 1.7580
+		a3 = 1.4215
+		a4 = 0.5075
+
+		return xx*(a0*np.sqrt(xsi) - a1*xsi - a2*xsi**2 + a3*xsi**3 - a4*xsi**4)
+
+	def yc(p, m, xsi):
+		# Camber line
+
+		def yc_xsi_lt_p(xsi):
+			return (m/p**2)*(2*p*xsi - xsi**2)
+
+		def dyc_xsi_lt_p(xsi):
+			return (2*m/p**2)*(p - xsi)
+
+		def yc_xsi_ge_p(xsi):
+			return (m/(1 - p)**2)*(1 - 2*p + 2*p*xsi - xsi**2)
+
+		def dyc_xsi_ge_p(xsi):
+			return (2*m/(1 - p)**2)*(p - xsi)
+
+		yc = np.array([yc_xsi_lt_p(x) if x < p else yc_xsi_ge_p(x) for x in xsi])
+		dyc = np.array([dyc_xsi_lt_p(x) if x < p else dyc_xsi_ge_p(x) for x in xsi])
+
+		return yc, dyc
+
+	xsi = np.linspace(0, 1, n_points)
+
+	yt = yt(xx, xsi)
+	yc, dyc = yc(p, m, xsi)
+	theta = np.arctan(dyc)
+
+	x_upper = xsi - yt*np.sin(theta)
+	y_upper = yc + yt*np.cos(theta)
+	x_lower = xsi + yt*np.sin(theta)
+	y_lower = yc - yt*np.cos(theta)
+
+	upper = np.array([x_upper, y_upper])
+	lower = np.array([x_lower, y_lower])
+
+	return upper, lower
