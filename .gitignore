@@ -1,6 +1,7 @@
-lib/__pycache__
-tests/
-"test_gmsh copy.py"
-test_gmsh_old.py"
-*.msh
-*.pyc
+/lib/__pycache__/
+/tests/
+/test_gmsh copy.py
+/test_gmsh_old.py
+/*.msh
+/airfoil_BL_quads.msh
+/**.msh
