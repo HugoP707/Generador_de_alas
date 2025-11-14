@@ -5,7 +5,7 @@ import re
 import numpy as np
 from math import sqrt
 from scipy.interpolate import interp1d
-from scipy.misc import derivative
+#from scipy.misc import derivative
 import matplotlib.pyplot as plt
 
 import airfoils

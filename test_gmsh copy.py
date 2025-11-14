@@ -57,7 +57,7 @@ def find_le_te(coords):
 	coords = coords[le_idx:] + coords[:le_idx]
 	# TE = índice con mayor x
 	te_idx = max(range(len(coords)), key=lambda i: coords[i][0])
-	return coords, 0, te_idx
+	return coords, 0, int(len(coords)/2)
 
 
 def normalize(vx, vy):
@@ -107,38 +107,47 @@ for fname, coords_raw in airfoil_coords_list:
 
 	# 2) Construir extrados e intrados garantizando coincidencia exacta en TE y LE
 	# Extrados: LE -> TE (inclusive)
-	extrados_pts = coords[:te_idx+1]
+	extrados_pts = coords[le_idx:te_idx+1]
 	# Intrados: TE -> LE (inclusive) -> tomar desde te_idx hasta end then include coords[0] (LE)
-	intrados_pts = coords[te_idx:] + [coords[0]]
-
+	intrados_pts = coords[te_idx:-1] + [coords[le_idx]]
+	"""
 	# Forzar coincidencia exacta del punto TE e LE entre extrados e intrados
 	if len(extrados_pts) >= 1 and len(intrados_pts) >= 1:
 		te_coord = extrados_pts[-1]
 		intrados_pts[0] = te_coord   # TE coincide exactamente
 		intrados_pts[-1] = extrados_pts[0]  # LE coincide exactamente
-
+	"""
 	# 3) Crear puntos OCC y splines
 	# Extrados: LE->TE
-	ex_pt_tags = [gmsh.model.occ.addPoint(x, y, 0, MESH_SIZE_NEAR) for x, y in extrados_pts]
+	ex_pt_tags = [gmsh.model.occ.addPoint(x, y, 0, MESH_SIZE_NEAR) for x, y in reversed(extrados_pts)]
+	gmsh.model.occ.synchronize()
 	s_ex = gmsh.model.occ.addSpline(ex_pt_tags)
 
 	# Intrados: TE->LE
-	in_pt_tags = [gmsh.model.occ.addPoint(x, y, 0, MESH_SIZE_NEAR) for x, y in intrados_pts]
+	in_pt_tags = [gmsh.model.occ.addPoint(x, y, 0, MESH_SIZE_NEAR) for x, y in reversed(intrados_pts)]
+	gmsh.model.occ.synchronize()
 	s_in = gmsh.model.occ.addSpline(in_pt_tags)
 
 	# 4) Crear curve loop cerrado: [s_ex, s_in]
 	# (s_ex end == s_in start == TE, s_in end == s_ex start == LE)
-	try:
-		loop = gmsh.model.occ.addCurveLoop([s_ex, s_in])
-		surf = gmsh.model.occ.addPlaneSurface([loop])
+	#try:
+
+	print("No error")
+	gmsh.model.occ.synchronize()
+	loop_sin = gmsh.model.occ.addCurveLoop([s_in])
+	loop_ex = gmsh.model.occ.addCurveLoop([s_ex])
+	gmsh.model.occ.synchronize()
+	surf = gmsh.model.occ.addPlaneSurface([loop_sin, loop_ex])
+	"""
 	except Exception as e:
+		print("Error")
 		# si fallara por seguridad, recurrimos a añadir lines LE/TE explícitas:
 		# crear lineas de cierre TE y LE entre puntos correspondientes
 		line_te = gmsh.model.occ.addLine(ex_pt_tags[-1], in_pt_tags[0])
 		line_le = gmsh.model.occ.addLine(in_pt_tags[-1], ex_pt_tags[0])
 		loop = gmsh.model.occ.addCurveLoop([s_ex, line_te, s_in, line_le])
 		surf = gmsh.model.occ.addPlaneSurface([loop])
-
+	"""
 	airfoil_surfaces.append(surf)
 	airfoil_curve_pairs.append((s_ex, s_in))
 """

@@ -124,10 +124,10 @@ gmsh.model.occ.synchronize()
 for curves in airfoil_curves:
 	add_boundary_layer_to_profile(
 		curves,
-		hwall_n=0.0001,   # primer espesor
-		thickness=0.008,  # grosor total
+		hwall_n=0.00001,   # primer espesor
+		thickness=0.002,  # grosor total
 		ratio=1.2,
-		quads=0
+		quads=1
 	)
 
 # ===========================
@@ -140,14 +140,14 @@ gmsh.model.mesh.field.setNumbers(dist_field, "EdgesList", all_curves)
 
 threshold_field = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold_field, "InField", dist_field)
-gmsh.model.mesh.field.setNumber(threshold_field, "SizeMin", 0.002)   # muy fino cerca
-gmsh.model.mesh.field.setNumber(threshold_field, "SizeMax", 0.2)    # grande lejos
-gmsh.model.mesh.field.setNumber(threshold_field, "DistMin", 0.0)     # tamaño mínimo desde 0
-gmsh.model.mesh.field.setNumber(threshold_field, "DistMax", 0.5)     # zona fina se extiende solo hasta 0.1 unidades
+gmsh.model.mesh.field.setNumber(threshold_field, "SizeMin", 0.0005)   # muy fino cerca
+gmsh.model.mesh.field.setNumber(threshold_field, "SizeMax", 0.02)    # grande lejos
+gmsh.model.mesh.field.setNumber(threshold_field, "DistMin", 0)     # tamaño mínimo desde 0
+gmsh.model.mesh.field.setNumber(threshold_field, "DistMax", 5)     # zona fina se extiende solo hasta 0.1 unidades
 
 # Activar el campo de refinamiento
 gmsh.model.mesh.field.setAsBackgroundMesh(threshold_field)
-
+#gmsh.model.mesh.field.setAsBackgroundMesh(dist_field)
 # --- Generar malla ---
 gmsh.model.mesh.generate(2)
 gmsh.write("airfoil_BL_quads.msh")
