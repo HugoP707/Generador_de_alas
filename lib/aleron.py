@@ -118,9 +118,17 @@ class Alerón:
 			return file_name
 
 	def exportar(self, separadores=", ", comaDec=False, coordz=True, carpeta=".", sameFile=False, inFileSeparador="\n\n"):
+		"""
+			separadores: que caracter/es utilizar para separar las coordenadas x, y (, z)
+			comaDec: usar comas como separador decimal en lugar de punto
+			coordz: añadir la coordenada z
+			carpeta: donde se exporta
+			sameFile: exportar el alerón en 1 solo archivo o en varios (para javafoil principalmente)
+			inFileSeparador: como separar cada elemento del alerón si se exporta en el mismo archivo
+		"""
 		result = ""
 		if not os.path.exists(carpeta):
-			os.mkdir(carpeta)
+			os.makedirs(carpeta)
 
 		for foil in self.foils:
 			result += foil.exportar(separador=separadores, comaDec=comaDec, coordz=coordz, toFile= not sameFile, filename= carpeta + "/" + str(foil.meta["name"]) + ".txt")
@@ -132,3 +140,6 @@ class Alerón:
 		if sameFile:
 			with open(carpeta + "/" + str(self.meta["name"]) + ".txt", "w") as file:
 				file.write(result)
+
+	def exportarJavaFoil(self, carpeta="."):
+		return self.exportar(separadores="\t", comaDec=True, coordz=False, carpeta=carpeta, sameFile=True, inFileSeparador="9999,9\t9999,9\n")

@@ -386,7 +386,7 @@ class Airfoil:
 		self.rotar(alfa)
 
 	def exportar(self, separador=", ", comaDec=False, coordz=True, toFile=True, filename=""):
-		result = "PLACA\n"
+		result = ""
 		#print(len(self._y_lower))
 		#print(len(self._y_upper))
 		### Back to front arriba y luego
@@ -412,6 +412,7 @@ class Airfoil:
 			with open(filename, "w") as file:
 				file.write(result)
 
+			print("[Exported to " + filename + "]")
 			return "[Exported to " + filename + "]"
 		else:
 			return result
