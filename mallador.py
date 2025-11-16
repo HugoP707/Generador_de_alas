@@ -17,18 +17,18 @@ airfoil_files = [
 airfoil_names = [
 	"main",
 	"flap1",
-	"flap2"
+	"flap2",
 ]
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
-use_circle_farfield = True  # True -> círculo, False -> caja
-farfield_radius = 10.0      # radio del dominio exterior (si usas círculo)
+use_circle_farfield = False	# True -> círculo, False -> caja
+farfield_radius = 10.0			# radio del dominio exterior (si usas círculo)
 tunnel_length = 10.0
 tunnel_height = 8.0
 
-distanciaMinRefinamiento = 0.25
-distanciaMaxRefinamiento = 3.33
+distanciaMinRefinamiento = 0.15
+distanciaMaxRefinamiento = 3
 
 first_layer_height = 1e-5   # altura primera capa BL
 bl_ratio = 1.2
@@ -39,7 +39,7 @@ farfield_mesh_size = 0.2         # tamaño lejos del perfil
 
 output_msh = "airfoil_simple.msh"
 output_su2 = "airfoil_simple.su2"
-
+output_cgns = "airfoil_simple.cgns"
 
 # ---------------------------
 # Inicializar gmsh.geo
@@ -135,12 +135,18 @@ gmsh.model.mesh.field.setNumber(zonaRefinamiento, "DistMax", distanciaMaxRefinam
 
 gmsh.model.mesh.field.setAsBackgroundMesh(zonaRefinamiento)
 
-gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
-gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
+gmsh.model.geo.synchronize()
+
+gmsh.option.setNumber("Mesh.SaveAll", 0)
+#gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
+#gmsh.option.setNumber("Mesh.Points", 1)
+#gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
+#gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
 
 # Generate mesh
+gmsh.model.mesh.generate(1)
 gmsh.model.mesh.generate(2)
-gmsh.model.mesh.optimize("Laplace2D", 5)
+gmsh.model.mesh.optimize("Laplace2D", 5) # La librería que he copiado lo usaba, yo no he visto gran diferencia
 
 gmsh.fltk.run()
 
