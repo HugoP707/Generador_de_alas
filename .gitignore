@@ -5,3 +5,5 @@
 /*.msh
 /airfoil_BL_quads.msh
 /**.msh
+/**.su2
+/__pycache__/

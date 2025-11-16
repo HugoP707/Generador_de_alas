@@ -45,7 +45,8 @@ def import_airfoil(filename, mesh_size=0.002):
 	loop = gmsh.model.occ.addCurveLoop([spline, closing_line])
 	surface = gmsh.model.occ.addPlaneSurface([loop])
 
-	return surface, [spline, closing_line]
+	# No añadir la closing line da capas limites mejores
+	return surface, [spline] # , closing_line]
 
 
 # ==================================
@@ -93,7 +94,6 @@ for fname in airfoil_files:
 	airfoil_surfaces.append(surf)
 	airfoil_curves.append(curves)
 
-gmsh.model.occ.synchronize()
 
 # ===========================
 # Dominio exterior
@@ -116,7 +116,7 @@ outer_surf = gmsh.model.occ.addPlaneSurface([outer_loop])
 
 # Restar los perfiles del dominio
 gmsh.model.occ.cut([(2, outer_surf)], [(2, s) for s in airfoil_surfaces])
-gmsh.model.occ.synchronize()
+#gmsh.model.occ.synchronize()
 
 # ===========================
 # Aplicar boundary layers a cada perfil
@@ -141,7 +141,7 @@ gmsh.model.mesh.field.setNumbers(dist_field, "EdgesList", all_curves)
 threshold_field = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(threshold_field, "InField", dist_field)
 gmsh.model.mesh.field.setNumber(threshold_field, "SizeMin", 0.0005)   # muy fino cerca
-gmsh.model.mesh.field.setNumber(threshold_field, "SizeMax", 0.02)    # grande lejos
+gmsh.model.mesh.field.setNumber(threshold_field, "SizeMax", 0.2)    # grande lejos
 gmsh.model.mesh.field.setNumber(threshold_field, "DistMin", 0)     # tamaño mínimo desde 0
 gmsh.model.mesh.field.setNumber(threshold_field, "DistMax", 5)     # zona fina se extiende solo hasta 0.1 unidades
 
