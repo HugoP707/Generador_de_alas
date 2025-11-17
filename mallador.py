@@ -22,7 +22,7 @@ airfoil_names = [
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
-use_circle_farfield = False	# True -> círculo, False -> caja
+use_circle_farfield = True	# True -> círculo, False -> caja
 farfield_radius = 10.0			# radio del dominio exterior (si usas círculo)
 tunnel_length = 10.0
 tunnel_height = 8.0

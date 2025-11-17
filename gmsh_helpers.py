@@ -552,7 +552,7 @@ class PlaneSurface:
 		self.dim = 2
 
 		print(self.tag_list)
-		gmsh.fltk.run()
+		# gmsh.fltk.run()
 		# create the gmsh object and store the tag of the geometric object
 		self.tag = gmsh.model.geo.addPlaneSurface(self.tag_list)
 

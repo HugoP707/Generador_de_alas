@@ -1,9 +1,11 @@
+/__pycache__/
 /lib/__pycache__/
 /tests/
+/SU2_PRUEBA/
 /test_gmsh copy.py
 /test_gmsh_old.py
-/*.msh
-/airfoil_BL_quads.msh
 /**.msh
 /**.su2
-/__pycache__/
+/**.vtu
+/**.dat
+config_base_restart.cfg
