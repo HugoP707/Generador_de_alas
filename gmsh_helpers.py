@@ -28,13 +28,13 @@ def import_airfoil(filename, eps=1e-9):
 	for x, y, z in coords:
 		if not clean or abs(clean[-1][0]-x) > eps or abs(clean[-1][1]-y) > eps:
 			clean.append((x, y, z))
-
-	#clean = coords
+	"""
+	clean = coords
 	# Si el primer y último son iguales, eliminar el último
 	if abs(clean[0][0]-clean[-1][0]) < eps and abs(clean[0][1]-clean[-1][1]) < eps:
 		clean.pop()
-	"""
-	return coords
+	
+	return clean
 
 """
 def read_profile(path, eps=1e-9):
@@ -57,7 +57,7 @@ def read_profile(path, eps=1e-9):
 
 	return pts
 """
-def read_profile(path, eps=1e-9):
+def read_profile(path, eps=1e-12):
 	return import_airfoil(path, eps)
 
 class Point:
@@ -442,27 +442,53 @@ class AirfoilSpline:
 		# Find leading and trailing edge location
 		# in points array
 		self.te_idx = 0									# max(self.points, key=attrgetter("x"))
-		self.le_idx = len(self.points) // 2		# min(self.points, key=attrgetter("x"))
+		self.le_idx = (len(self.points) - 1) // 2		# min(self.points, key=attrgetter("x"))
 
 		self.te = self.points[self.te_idx]
 		self.le = self.points[self.le_idx]
-		#print("Total points: " + str(len(self.points)))
-		#print("Leading edge index: " + str(self.le_idx))
+		print("Total points: " + str(len(self.points)))
+		print("Leading edge index: " + str(self.le_idx))
 
-		#print(len(self.points))
-		#print(len(self.points[self.te_idx:self.le_idx]) + len(self.points[self.le_idx:]))
+		print(len(self.points))
+		print("Margins: ")
+		print(self.te_idx, ":", self.le_idx+1)
+		print(self.le_idx, ":", len(self.points)+1)
+		print(len(self.points[self.te_idx:self.le_idx+1]) + len(self.points[self.le_idx:len(self.points)+1]))
 
 	def gen_skin(self):
+		"""
 		self.lower_spline = Spline(
-            self.points
+			self.points[self.te_idx:self.le_idx+1]
 		)
 
 		# create a spline from the trailing edge to the up down point (down part)
 		self.upper_spline = Spline(
-			[self.points[0], self.points[-1]]
+			self.points[self.te_idx:self.le_idx]
 		)
 
-		self.closing_line = Spline([self.points[0], self.points[-1]])
+		self.closing_line = Spline([self.points[self.te_idx], self.points[-1]])
+		"""
+		"""
+		Method to generate the three splines forming the foil, Only call this function when the points
+		of the airfoil are in their final position
+		-------
+		"""
+		# Find the first point after 0.049 in the upper band lower spline
+		# create a spline from the up middle point to the trailing edge (up part)
+		self.upper_spline = Spline(
+			self.points[0: self.le_idx + 1])
+
+		# create a spline from the trailing edge to the up down point (down part)
+		self.lower_spline = Spline(
+			self.points[self.le_idx:]
+		)
+
+		self.closing_line = Line(
+			self.points[len(self.points)-1], self.points[0]
+		)
+		with open("testing.txt", "w") as file:
+			for point in self.points:
+				file.write("{0},{1},{2}\n".format(point.x,point.y,point.z))
 
 	def close_loop(self):
 		"""
@@ -473,7 +499,7 @@ class AirfoilSpline:
 		_ : int
 			return the tag of the CurveLoop object
 		"""
-		self.close_loop_tag = CurveLoop([self.upper_spline, self.lower_spline]).tag
+		self.close_loop_tag = CurveLoop([self.upper_spline, self.lower_spline, self.closing_line]).tag
 		return self.close_loop_tag
 
 	def define_bc(self):
@@ -481,10 +507,17 @@ class AirfoilSpline:
 		Method that define the marker of the airfoil for the boundary condition
 		-------
 		"""
+		print("Line tags: ")
+		print([
+			self.upper_spline.tag,
+			self.lower_spline.tag,
+			self.closing_line.tag
+		])
 
 		self.bc = gmsh.model.addPhysicalGroup(
 			self.dim, [self.upper_spline.tag,
-							self.lower_spline.tag]
+							self.lower_spline.tag,
+							self.closing_line.tag]
 		)
 		gmsh.model.setPhysicalName(self.dim, self.bc, self.name)
 
@@ -518,6 +551,8 @@ class PlaneSurface:
 
 		self.dim = 2
 
+		print(self.tag_list)
+		gmsh.fltk.run()
 		# create the gmsh object and store the tag of the geometric object
 		self.tag = gmsh.model.geo.addPlaneSurface(self.tag_list)
 

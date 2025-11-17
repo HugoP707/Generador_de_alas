@@ -54,13 +54,15 @@ for foil_points, name in zip(all_airfoil_points, airfoil_names):
 		AirfoilSpline(
 			foil_points, mesh_size_airfoil, name)
 	)
-	gmsh.model.geo.synchronize()
+
+gmsh.model.geo.synchronize()
 
 for airfoil in airfoils:
 	airfoil.gen_skin()
 
 # crear farfield
 if use_circle_farfield:
+	#ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
 	ext_domain = Circle(0, 0, 0, radius=farfield_radius,
 								mesh_size=farfield_mesh_size)
 else:
@@ -68,7 +70,6 @@ else:
 									mesh_size=farfield_mesh_size)
 
 gmsh.model.geo.synchronize()
-
 surface = PlaneSurface([ext_domain] + airfoils)
 gmsh.model.geo.synchronize()
 
