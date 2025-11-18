@@ -29,7 +29,7 @@ import re
 
 import numpy as np
 from scipy.interpolate import interp1d
-from scipy.differentiate import derivative
+from scipy.misc import derivative
 import matplotlib.pyplot as plt
 
 POINTS_AIRFOIL = 200
@@ -382,8 +382,9 @@ class Airfoil:
 		self._x_lower, self._y_lower = new_lower
 
 	def setAOA(self, alfa):
+		dela_alfa = alfa - self.aoa
 		self.aoa = alfa
-		self.rotar(alfa)
+		self.rotar(dela_alfa)
 
 	def exportar(self, separador=", ", comaDec=False, coordz=True, toFile=True, filename=""):
 		result = ""

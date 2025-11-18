@@ -52,6 +52,10 @@ class Alerón:
 			foil.escalar(1/self.cuerdaTotal)
 			foil.rotar(-self.AOATotal)
 
+	def rotar(self, alfa):
+		for foil in self.foils:
+			foil.rotar(alfa)
+
 	def plot(self, *, show=True, save=False, settings={}):
 		"""
 		Plot the airfoil and camber line

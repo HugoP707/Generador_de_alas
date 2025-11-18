@@ -20,26 +20,32 @@ airfoil_names = [
 	"flap2",
 ]
 
-all_airfoil_points = [read_profile(file) for file in airfoil_files]
-
-use_circle_farfield = True	# True -> círculo, False -> caja
-farfield_radius = 10.0			# radio del dominio exterior (si usas círculo)
-tunnel_length = 10.0
-tunnel_height = 8.0
-
-distanciaMinRefinamiento = 0.15
-distanciaMaxRefinamiento = 3
-
-first_layer_height = 1e-5   # altura primera capa BL
-bl_ratio = 1.2
-espesor_bl = 0.002
-
-mesh_size_airfoil = espesor_bl   # tamaño en el contorno del perfil
-farfield_mesh_size = 0.2         # tamaño lejos del perfil
-
 output_msh = "airfoil_simple.msh"
 output_su2 = "airfoil_simple.su2"
 output_cgns = "airfoil_simple.cgns"
+
+all_airfoil_points = [read_profile(file) for file in airfoil_files]
+
+preview_geometria = False
+
+use_circle_farfield = True	# True -> círculo, False -> caja
+farfield_radius = 7			# radio del dominio exterior (si usas círculo)
+circlex_offset = 2
+tunnel_length = 20.0
+tunnel_height = 10.0
+tunnelx_offset = 5
+
+distanciaMinRefinamiento = 0.1
+distanciaMaxRefinamiento = 7
+
+first_layer_height = 0.0011478171067343197   # altura primera capa BL
+bl_ratio = 1.2
+espesor_bl = first_layer_height*(3+1)
+
+mesh_size_airfoil = 0.002 # espesor_bl*0.8   # tamaño en el contorno del perfil
+mesh_size_close = 0.01
+farfield_mesh_size = 0.2         # tamaño lejos del perfil
+
 
 # ---------------------------
 # Inicializar gmsh.geo
@@ -63,14 +69,14 @@ for airfoil in airfoils:
 # crear farfield
 if use_circle_farfield:
 	#ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
-	ext_domain = Circle(0, 0, 0, radius=farfield_radius,
+	ext_domain = Circle(0+circlex_offset, 0, 0, radius=farfield_radius,
 								mesh_size=farfield_mesh_size)
 else:
-	ext_domain = Rectangle(0, 0, 0, tunnel_length, tunnel_height,
+	ext_domain = Rectangle(0+tunnelx_offset, 0, 0, tunnel_length, tunnel_height,
 									mesh_size=farfield_mesh_size)
 
 gmsh.model.geo.synchronize()
-surface = PlaneSurface([ext_domain] + airfoils)
+surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_geometria)
 gmsh.model.geo.synchronize()
 
 # crear superficie con agujeros = outer_loop + todos los inner loops
@@ -129,7 +135,7 @@ gmsh.model.mesh.field.setNumber(campoDistancia, "Sampling", 100)
 #        Point         DistMin  DistMax
 zonaRefinamiento = gmsh.model.mesh.field.add("Threshold")
 gmsh.model.mesh.field.setNumber(zonaRefinamiento, "InField", campoDistancia)
-gmsh.model.mesh.field.setNumber(zonaRefinamiento, "SizeMin", mesh_size_airfoil)
+gmsh.model.mesh.field.setNumber(zonaRefinamiento, "SizeMin", mesh_size_close)
 gmsh.model.mesh.field.setNumber(zonaRefinamiento, "SizeMax", farfield_mesh_size)
 gmsh.model.mesh.field.setNumber(zonaRefinamiento, "DistMin", distanciaMinRefinamiento)
 gmsh.model.mesh.field.setNumber(zonaRefinamiento, "DistMax", distanciaMaxRefinamiento)

@@ -11,16 +11,19 @@ s1223U, s1223L = import_airfoil_data("airfoils/s1223.dat")
 e423U, e423L = import_airfoil_data("airfoils/e423.dat")
 
 ## Si luego usas normalizarAleron() estas variables serán adimensionales
-C0 = 1
-C1 = C0 * 1/3
-C2 = C0 * 1/4
-AOA0 = 0
-AOA1 = AOA0 + 30
-AOA2 = AOA1 + 50
+Lc = 1
+C0 = Lc*0.75
+C1 = C0*0.75
+C2 = C1*0.75
+print("Cuerdas: ")
+print([C0, C1, C2])
+AOA0 = -5
+AOA1 = AOA0 + 33
+AOA2 = AOA1 + 40
 print("Ángulos de ataque: ")
 print([AOA0, AOA1, AOA2])
 
-main = Airfoil(Fx74U, Fx74L, {"name": "main"})
+main = Airfoil(s1223U, s1223L, {"name": "main"})
 main.flip()
 main.escalar(C0)
 main.setAOA(AOA0)
@@ -35,14 +38,17 @@ flap2.flip()
 flap2.escalar(C2)
 flap2.setAOA(AOA2)
 
+# TODO: CUIDADO CON setAOA y rotar, no fiarse de setAOA !!!!
+
 # GAPS = [[C1*-0.25, C1*0.01], [C2*-0.25, C2*0.01]]
-GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.1]), gaps_normalizados(C2, AOA1, [-0.15, 0.1])]
+GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05]), gaps_normalizados(C2, AOA1, [-0.2, 0.025])]
 ala = Alerón([main, flap1, flap2], GAPS, {"name": "RW"})
-# ala.normalizarAleron()
+ala.normalizarAleron()
+ala.rotar(ala.AOATotal)
 print("Cuerda del alerón: " + str(ala.cuerdaTotal))
 print("AOA del alerón: " + str(ala.AOATotal))
 for foil in ala.foils:
 	print(foil.max_extrados())
 
 ala.plot()
-ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest1", sameFile=False) #, inFileSeparador="9999,9\t9999,9\n")
+ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest2", sameFile=False) #, inFileSeparador="9999,9\t9999,9\n")
