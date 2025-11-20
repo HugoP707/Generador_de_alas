@@ -1,19 +1,22 @@
 # gen_airfoil_simple.py
 # Requisitos: pip install gmsh meshio numpy
+import os
 import gmsh
 import meshio
 from Generador_de_alas.mallador.gmsh_helpers import *
-import os
 
 
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
+# Archivos de los perfiles colocados
 airfoil_files = [
 	"tests/alaTest1/main.txt",
 	"tests/alaTest1/flap1.txt",
 	"tests/alaTest1/flap2.txt",
 ]
+# Nombres de las boundaries de cada perfil
+# (el farfield se exporta como "farfield")
 airfoil_names = [
 	"main",
 	"flap1",
@@ -39,16 +42,25 @@ tunnel_length = 20.0
 tunnel_height = 10.0
 tunnelx_offset = 5			#adelantar el perfil dentro de la caja
 
-distanciaMinRefinamiento = 0
-distanciaMaxRefinamiento = 4
-
 first_layer_height = 0.001   # altura primera capa BL
 bl_ratio = 1.2
 espesor_bl = first_layer_height*(3+1)
 
 mesh_size_airfoil = 0.001 # espesor_bl*0.8   # tamaño en el contorno del perfil
-mesh_size_close = 0.001
-farfield_mesh_size = 0.2         # tamaño lejos del perfil
+
+# SizeMax -                     /------------------
+#                              /
+#                             /
+#                            /
+# SizeMin -o----------------/
+#          |                |    |
+#        Point         DistMin  DistMax
+
+distanciaMinRefinamiento = 0
+distanciaMaxRefinamiento = 4
+
+mesh_size_close = 0.001				#tamaño cerca del ala
+farfield_mesh_size = 0.2         # tamaño lejos del ala
 
 ###########################################################
 

@@ -10,6 +10,16 @@ Fx74U, Fx74L = import_airfoil_data("datos_perfiles/FX74.dat")
 s1223U, s1223L = import_airfoil_data("datos_perfiles/s1223.dat")
 e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 
+###############################################################################################
+# Por defecto los perfiles los exporta con 120 puntos, independientemente de de los que entren
+# además están concentrados los puntos en los bordes de ataque y salida, que es donde queremos
+# más precisión (mi mallador no hace mucho caso de esto pero bueno)
+###############################################################################################
+
+
+
+
+
 ## (Ignorad este comentario)
 # Si luego usas normalizarAleron() estas variables serán adimensionales
 
@@ -18,7 +28,6 @@ e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 # ignorad la forma rara que he usado
 # y poned numeros concretos si preferís
 ########################################
-
 Lc = 1
 C0 = Lc*0.75
 C1 = C0*0.5

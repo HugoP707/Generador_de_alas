@@ -32,8 +32,10 @@ from scipy.interpolate import interp1d, PchipInterpolator
 from scipy.misc import derivative
 import matplotlib.pyplot as plt
 
+
 POINTS_AIRFOIL = 120//2
 CLUSTERING = 1.2
+
 
 class NACADefintionError(Exception):
 	"""Raised when the NACA identifier number is not valid"""
