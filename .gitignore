@@ -1,0 +1,23 @@
+/__pycache__/
+/lib/__pycache__/
+/tests/
+/Javafoils/
+
+/su2_test2/
+/SU2_PRUEBA/
+
+/test_gmsh copy.py
+/test_gmsh_old.py
+/testing.txt
+
+/**.msh
+/**.su2
+/**.dat
+/**.csv
+/**.vtu
+/**.psvm
+config_base_restart.cfg
+
+/calculos.py
+/sim_launcher.py
+/helpers.py
