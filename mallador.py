@@ -26,14 +26,18 @@ output_cgns = "airfoil_simple.cgns"
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
+# Más que nada para revisar cosas, no hace falta si no te da errores
 preview_geometria = False
+
+###########################################################
 
 use_circle_farfield = True	# True -> círculo, False -> caja
 farfield_radius = 7			# radio del dominio exterior (si usas círculo)
-circlex_offset = 2
+circlex_offset = 2			# adelantar el perfil dentro del circulo
+
 tunnel_length = 20.0
 tunnel_height = 10.0
-tunnelx_offset = 5
+tunnelx_offset = 5			#adelantar el perfil dentro de la caja
 
 distanciaMinRefinamiento = 0
 distanciaMaxRefinamiento = 4
@@ -46,6 +50,11 @@ mesh_size_airfoil = 0.001 # espesor_bl*0.8   # tamaño en el contorno del perfil
 mesh_size_close = 0.001
 farfield_mesh_size = 0.2         # tamaño lejos del perfil
 
+###########################################################
+
+#########################################
+# A partir de aquí no hay que tocar nada
+#########################################
 
 # ---------------------------
 # Inicializar gmsh.geo
