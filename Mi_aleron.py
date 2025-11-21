@@ -4,21 +4,35 @@ from Generador_de_alas.alas.aleron import *
 
 
 # Perfiles de ejemplo, importarlos desde la carpeta que sea (en estos casos están en esas
+# Como esto lo copié de otro tío, lo importa como dos curvas, la de extradós e intradós
 naca642320U, naca642320L = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 naca64AU, naca64AL = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 Fx74U, Fx74L = import_airfoil_data("datos_perfiles/FX74.dat")
 s1223U, s1223L = import_airfoil_data("datos_perfiles/s1223.dat")
 e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 
+
+##############################
+# Elegir los perfiles a usar:
+##############################
+elem1U, elem1L = Fx74U, Fx74L
+elem2U, elem2L = s1223U, s1223L
+elem3U, elem3L = s1223U, s1223L
+
 ###############################################################################################
 # Por defecto los perfiles los exporta con 120 puntos, independientemente de de los que entren
 # además están concentrados los puntos en los bordes de ataque y salida, que es donde queremos
 # más precisión (mi mallador no hace mucho caso de esto pero bueno)
+# Si quieres cambiar el numero de puntos o el factor de concentración ve a:
+# 			/Generador_de_alas/alas/airfoils.py
+# Y ahí están definidas las constantes
+#
+# POINTS_AIRFOIL = 120//2 # (Que sea divisible por dos para no complicar)
+# CLUSTERING = 1.2
+#
+# (Hay que dividir los puntos entre 2 porque usa esos puntos para extradós e intradós)
+# (Es chapucero pero me da pereza cambiarlo ya)
 ###############################################################################################
-
-
-
-
 
 ## (Ignorad este comentario)
 # Si luego usas normalizarAleron() estas variables serán adimensionales
@@ -53,21 +67,21 @@ GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05]), gaps_normalizados(C2, AOA1, [
 
 
 ##################################################################
-# A partir de aquí solo hay que tocar si quieres cambiar
-# los nombres de los archivos de salida, o añadir/quitar perfiles
+# A partir de aquí solo hay que tocar los nombres de los perfiles
+# que h
 ##################################################################
 
-main = Airfoil(s1223U, s1223L, {"name": "main"})
+main = Airfoil(elem1U, elem1L, {"name": "main"})
 main.flip()
 main.escalar(C0)
 main.setAOA(AOA0)
 
-flap1 = Airfoil(s1223U, s1223L, {"name": "flap1"})
+flap1 = Airfoil(elem2U, elem2L, {"name": "flap1"})
 flap1.flip()
 flap1.escalar(C1)
 flap1.setAOA(AOA1)
 
-flap2 = Airfoil(s1223U, s1223L, {"name": "flap2"})
+flap2 = Airfoil(elem3U, elem3L, {"name": "flap2"})
 flap2.flip()
 flap2.escalar(C2)
 flap2.setAOA(AOA2)

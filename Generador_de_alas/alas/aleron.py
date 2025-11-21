@@ -133,12 +133,12 @@ class Alerón:
 
 	def exportar(self, separadores=", ", comaDec=False, coordz=True, carpeta=".", sameFile=False, inFileSeparador="\n\n"):
 		"""
-			separadores: que caracter/es utilizar para separar las coordenadas x, y (, z)
-			comaDec: usar comas como separador decimal en lugar de punto
-			coordz: añadir la coordenada z
-			carpeta: donde se exporta
-			sameFile: exportar el alerón en 1 solo archivo o en varios (para javafoil principalmente)
-			inFileSeparador: como separar cada elemento del alerón si se exporta en el mismo archivo
+			- separadores: que caracter/es utilizar para separar las coordenadas x, y (, z)
+			- comaDec: usar comas como separador decimal en lugar de punto
+			- coordz: añadir la coordenada z
+			- carpeta: donde se exporta
+			- sameFile: exportar el alerón en 1 solo archivo o en varios (para javafoil principalmente)
+			- inFileSeparador: como separar cada elemento del alerón si se exporta en el mismo archivo
 		"""
 		result = ""
 		if not os.path.exists(carpeta):

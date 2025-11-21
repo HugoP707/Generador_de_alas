@@ -33,7 +33,7 @@ from scipy.misc import derivative
 import matplotlib.pyplot as plt
 
 
-POINTS_AIRFOIL = 120//2
+POINTS_AIRFOIL = 120//2 # (Que sea divisible por dos para no complicar)
 CLUSTERING = 1.2
 
 
