@@ -108,7 +108,7 @@ class Alerón:
 				ax.plot(foil.all_points[0, :], foil.all_points[1, :], '.', color='grey')
 
 			if settings.get('camber', False):
-				x = np.linspace(0, 1, int(airfoils.POINTS_AIRFOIL/2))
+				x = np.linspace(0, 1, int(POINTS_AIRFOIL/2))
 				ax.plot(x, foil.camber_line(x), '--', color='red')
 
 		if settings.get('chord', False):
