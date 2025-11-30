@@ -1,0 +1,11 @@
+- LOW: ~30k
+   iter_time: 0.5 - 0.3
+
+   cl: -2.24025
+   df:  0.27594
+- HIGH: ~1m
+   iter_time: 15 - 13
+   ---
+   ---
+- MEDIUM: ~300k
+   iter_time: 5

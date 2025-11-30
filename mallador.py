@@ -1,8 +1,8 @@
 # gen_airfoil_simple.py
 # Requisitos: pip install gmsh meshio numpy
-import os
+#import os
 import gmsh
-import meshio
+#import meshio
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
@@ -11,21 +11,22 @@ from Generador_de_alas.mallador.gmsh_helpers import *
 # ---------------------------
 # Archivos de los perfiles colocados
 airfoil_files = [
-	"tests/alaTest1/main.txt",
-	"tests/alaTest1/flap1.txt",
-	"tests/alaTest1/flap2.txt",
+   "tests/alaTest1/main.txt",
+   "tests/alaTest1/flap1.txt",
+   "tests/alaTest1/flap2.txt",
 ]
-# Nombres de las boundaries de cada perfil
+# Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
 airfoil_names = [
-	"main",
-	"flap1",
-	"flap2",
+   "main",
+   "flap1",
+   "flap2",
 ]
 
-output_msh = "airfoil_simple.msh"
+# Nombre del archibo de la malla
+#output_msh = "airfoil_simple.msh"
 output_su2 = "airfoil_simple.su2"
-output_cgns = "airfoil_simple.cgns"
+#output_cgns = "airfoil_simple.cgns"
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
@@ -33,20 +34,30 @@ all_airfoil_points = [read_profile(file) for file in airfoil_files]
 preview_geometria = False
 
 ###########################################################
+### SETTINGS DEL FARFIELD ###
+###########################################################
 
 use_circle_farfield = True	# True -> círculo, False -> caja
-farfield_radius = 7			# radio del dominio exterior (si usas círculo)
+farfield_radius = 6			# radio del dominio exterior (si usas círculo)
 circlex_offset = 2			# adelantar el perfil dentro del circulo
 
 tunnel_length = 20.0
 tunnel_height = 10.0
 tunnelx_offset = 5			#adelantar el perfil dentro de la caja
 
-first_layer_height = 0.001   # altura primera capa BL
-bl_ratio = 1.2
-espesor_bl = first_layer_height*(3+1)
 
-mesh_size_airfoil = 0.001 # espesor_bl*0.8   # tamaño en el contorno del perfil
+###########################################################
+## SETTINGS CAPA LÍMITE
+###########################################################
+first_layer_height = 1.1e-5   # altura primera capa BL
+bl_ratio = 1.1
+espesor_bl = first_layer_height*(15+1)
+
+
+##########################################################
+## SETTINGS REFINAMIENTO
+##########################################################
+mesh_size_airfoil = 0.01 # espesor_bl*0.8   # tamaño en el contorno del perfil
 
 # SizeMax -                     /------------------
 #                              /
@@ -56,11 +67,11 @@ mesh_size_airfoil = 0.001 # espesor_bl*0.8   # tamaño en el contorno del perfil
 #          |                |    |
 #        Point         DistMin  DistMax
 
-distanciaMinRefinamiento = 0
-distanciaMaxRefinamiento = 4
+distanciaMinRefinamiento = 0.0
+distanciaMaxRefinamiento = farfield_radius * 0.5
 
-mesh_size_close = 0.001				#tamaño cerca del ala
-farfield_mesh_size = 0.2         # tamaño lejos del ala
+mesh_size_close = espesor_bl * 7  #tamaño cerca del ala
+farfield_mesh_size = 0.33         # tamaño lejos del ala
 
 ###########################################################
 
@@ -76,25 +87,25 @@ gmsh.initialize()
 airfoils = []
 
 for foil_points, name in zip(all_airfoil_points, airfoil_names):
-	print(len(foil_points))
-	airfoils.append(
-		AirfoilSpline(
-			foil_points, mesh_size_airfoil, name)
-	)
+   print(len(foil_points))
+   airfoils.append(
+      AirfoilSpline(
+         foil_points, mesh_size_airfoil, name)
+   )
 
 gmsh.model.geo.synchronize()
 
 for airfoil in airfoils:
-	airfoil.gen_skin()
+   airfoil.gen_skin()
 
 # crear farfield
 if use_circle_farfield:
-	#ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
-	ext_domain = Circle(0+circlex_offset, 0, 0, radius=farfield_radius,
-								mesh_size=farfield_mesh_size)
+   #ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
+   ext_domain = Circle(0+circlex_offset, 0, 0, radius=farfield_radius,
+                        mesh_size=farfield_mesh_size)
 else:
-	ext_domain = Rectangle(0+tunnelx_offset, 0, 0, tunnel_length, tunnel_height,
-									mesh_size=farfield_mesh_size)
+   ext_domain = Rectangle(0+tunnelx_offset, 0, 0, tunnel_length, tunnel_height,
+                           mesh_size=farfield_mesh_size)
 
 gmsh.model.geo.synchronize()
 surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_geometria)
@@ -103,33 +114,37 @@ gmsh.model.geo.synchronize()
 # crear superficie con agujeros = outer_loop + todos los inner loops
 airfoil_curves = []
 for airfoil in airfoils:
-	curv = [airfoil.upper_spline.tag,
-				airfoil.lower_spline.tag]
+   curv = [airfoil.upper_spline.tag,
+            airfoil.lower_spline.tag,
+            airfoil.closing_line.tag
+            ]
 
-	airfoil_curves += curv
-	# Creates a new mesh field of type 'BoundaryLayer' and assigns it an ID (f).
-	f = gmsh.model.mesh.field.add('BoundaryLayer')
+   airfoil_curves += curv
+   # Creates a new mesh field of type 'BoundaryLayer' and assigns it an ID (f).
+   f = gmsh.model.mesh.field.add('BoundaryLayer')
 
-	# Add the curves where we apply the boundary layer (around the airfoil for us)
-	gmsh.model.mesh.field.setNumbers(f, 'CurvesList', curv)
-	gmsh.model.mesh.field.setNumber(f, 'Size', first_layer_height)  # size 1st layer
-	gmsh.model.mesh.field.setNumber(f, 'Ratio', bl_ratio)  # Growth ratio
-	# Total thickness of boundary layer
-	gmsh.model.mesh.field.setNumber(f, 'Thickness', espesor_bl)
+   gmsh.model.mesh.field.setNumbers(
+         f, "FanPointsList", [airfoil.le.tag + i for i in range(-2, 2)] + [airfoil.te.tag + i for i in range(-2, 2)])
 
-	# Forces to use quads and not triangle when =1 (i.e. true)
-	gmsh.model.mesh.field.setNumber(f, 'Quads', 1)
+   #gmsh.model.mesh.field.setNumber(
+   #   f, "BoundaryLayerFanElements", 20)
+   # Add the curves where we apply the boundary layer (around the airfoil for us)
+   gmsh.model.mesh.field.setNumbers(f, 'CurvesList', curv)
+   gmsh.model.mesh.field.setNumber(f, 'Size', first_layer_height)  # size 1st layer
+   gmsh.model.mesh.field.setNumber(f, 'Ratio', bl_ratio)  # Growth ratio
+   # Total thickness of boundary layer
+   gmsh.model.mesh.field.setNumber(f, 'Thickness', espesor_bl)
 
-	# Enter the points where we want a "fan" (points must be at end on line)(only te for us)
-	gmsh.model.mesh.field.setNumbers(
-			f, "FanPointsList", [airfoil.te.tag])
+   # Forces to use quads and not triangle when =1 (i.e. true)
+   gmsh.model.mesh.field.setNumber(f, 'Quads', 1)
 
-	gmsh.model.mesh.field.setAsBoundaryLayer(f)
+   # Enter the points where we want a "fan" (points must be at end on line)(only te for us)
+   gmsh.model.mesh.field.setAsBoundaryLayer(f)
 
 ext_domain.define_bc()
 surface.define_bc()
 for airfoil in airfoils:
-	airfoil.define_bc()
+   airfoil.define_bc()
 
 gmsh.model.geo.synchronize()
 
