@@ -4,7 +4,7 @@ Esto son una serie de scripts utilizados para crear, mallar (y en el futuro simu
 
 Hace falta instalar Python, SU2 y Paraview, además la primera vez es posible que haya que instalar algunas librerías de python. Para hacerlo,
 hay que ejecutar en el terminal (después de instalar Python)
-`pip install requirements.txt`
+`pip install -r requirements.txt`
 A falta de automatizar un poco más el proceso, el procedimiento de cero a simular un caso sería el siguiente:
 
 ### 1. Definición de la geometría
@@ -15,6 +15,7 @@ Una vez esté definido, hay que ejecutar ese programa, que escribirá los archiv
 se especificase (por defecto la carpeta tests, es recomendable cambiar esto y hacer para cada alerón una carpeta distinta)
 
 El programa antes de acabar hará una preview de la geometría que se ha creado y escribirá algunos datos que pudieran ser de relevancia
+![preview](capturas/image-3.png)
 
 ### 2. Mallado
 Una vez se tiene una carpeta que contenga los perfiles colocados, se debe ejecutar `mallador.py`, contiene varios parámetros que definen
@@ -56,3 +57,12 @@ Una vez esté la configuración hecha, hay que ejecutar en el terminal:
 SU2 irá poniendo en pantalla los residuals, el cl y el cd, pero para poder ver el flujo y una gráfica de los residuals y los coeficientes a lo largo de las iteraciones
 hace falta usar Paraview, también proveo un plantilla con la visualización del flujo y la gráfica ya creadas `flow_view.pvsm`, hay que abrir Paraview,
 y en File>load case navegar hasta esta carpeta, y seleccionar `flow_view`
+![preview](capturas/image.png)
+> NOTA: Al abrir el archivo, hay que "sustituir" los archivos y seleccionarlos manualmente.
+Al abrirlo dirá algo como "replace with local files", si no lo haceis ahí, os dará varios errores pero luego podeis simplemente hacer click derecho en `flow.vtu`, `surface_flow.vtu` y `history.csv`, darle a change file y elegir "los mismos" archivos de la carpeta.
+![change_file](capturas/image-1.png)
+
+Para refrescar los archivos y que se actualicen basta con darle a F5
+
+En la pestaña de Layout-2 hay una gráfica (un experimento feo) de el Cp y el Y+ a lo largo de la cuerda del perfil, por desgracia al ser los tres perfiles "la misma" surface, se raya y se llena de líneas feas, sin embargo, creo que si se ignoran las rectas las gráficas siguen siendo utiles
+![cp_yplus](capturas/image-2.png)

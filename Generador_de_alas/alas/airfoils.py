@@ -29,7 +29,7 @@ import re
 
 import numpy as np
 from scipy.interpolate import interp1d, PchipInterpolator
-from scipy.misc import derivative
+from scipy.differentiate import derivative
 import matplotlib.pyplot as plt
 
 
