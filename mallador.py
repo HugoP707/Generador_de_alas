@@ -57,7 +57,8 @@ espesor_bl = 3e-3             # Espesor total
 ##########################################################
 ## SETTINGS REFINAMIENTO
 ##########################################################
-mesh_size_airfoil = 0.001 #espesor_bl*0.8   # tamaño en el contorno del perfil
+# Cambiar esta no es importante, en todo caso mesh_size_close
+mesh_size_airfoil = 0.001   # tamaño en el contorno del perfil
 
 # SizeMax -                     /------------------
 #                              /
@@ -70,8 +71,8 @@ mesh_size_airfoil = 0.001 #espesor_bl*0.8   # tamaño en el contorno del perfil
 distanciaMinRefinamiento = 0.02
 distanciaMaxRefinamiento = farfield_radius * 1
 
-mesh_size_close =  espesor_bl  #tamaño cerca del ala
-farfield_mesh_size = 0.33         # tamaño lejos del ala
+mesh_size_close =  espesor_bl  # tamaño cerca del ala
+farfield_mesh_size = 0.33      # tamaño lejos del ala
 
 ###########################################################
 

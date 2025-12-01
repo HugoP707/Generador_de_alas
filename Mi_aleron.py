@@ -39,11 +39,10 @@ elem3U, elem3L = s1223U, s1223L
 
 ########################################
 # Aquí poned las cuerdas que veais,
-# ignorad la forma rara que he usado
+# ignorad la forma "rara" que he usado
 # y poned numeros concretos si preferís
 ########################################
-Lc = 1
-C0 = Lc*0.75
+C0 = 0.5
 C1 = C0*0.5
 C2 = C1*0.5
 
@@ -57,19 +56,25 @@ AOA2 = AOA1 + 40
 print("Ángulos de ataque: ")
 print([AOA0, AOA1, AOA2])
 
-# GAPS, los huecos entre los perfiles, si estáis en un editor de texto decente poner el ratón
-# encima de la función os pondrá la documentación, sino podeís leerla en lib/aleron.py
-GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05]), gaps_normalizados(C2, AOA1, [-0.2, 0.05])]
 
 # Si prefieres usar las coordenadas absolutas puedes hacerlo como:
 # pero mi recomendación es usar lo otro.
 # GAPS = [[0, 0.2], [0.2, 0.2]]
 
+# GAPS, los huecos entre los perfiles, si estáis en un editor de texto decente poner el ratón
+# encima de la función os pondrá la documentación, sino podeís leerla en Generador_de_Alas/alas/aleron.py
 
-##################################################################
-# A partir de aquí solo hay que tocar los nombres de los perfiles
+# Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
+GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05]), gaps_normalizados(C2, AOA1, [-0.2, 0.05])]
+# Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
+#GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
+# Valores absolutos y en los ejes de coordenadas normales
+#GAPS = [[0.2, 0.1], [0.02, 0.01]]
+
+############################################################################
+# A partir de aquí solo hay que tocar los nombres de los perfiles (opcional)
 # y la carpeta para exportar al final
-##################################################################
+############################################################################
 
 main = Airfoil(elem1U, elem1L, {"name": "main"})
 main.flip()
@@ -88,10 +93,15 @@ flap2.setAOA(AOA2)
 
 # TODO: CUIDADO CON setAOA y rotar,
 # no fiarse de setAOA, si vas a añadir otro perfil mejor usa rotar !!!!
-
 ala = Alerón([main, flap1, flap2], GAPS, {"name": "RW"})
-ala.normalizarAleron()
-ala.rotar(ala.AOATotal)
+#                                           ^^^^^^^^^ Esto no se usa por ahora, no hace falta cambiarlo
+
+## Estas líneas serían para normalizar el ala (hacerla de longitud unitaria)
+## La primera la convierte en longitud 1 y la pone con Ángulo de ataque 0
+## La segunda vuelve a colocar el alerón con el ángulo de ataque que tenía
+#ala.normalizarAleron()
+#ala.rotar(ala.AOATotal)
+
 print("Cuerda del alerón: " + str(ala.cuerdaTotal))
 print("AOA del alerón: " + str(ala.AOATotal))
 for foil in ala.foils:
