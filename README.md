@@ -2,6 +2,9 @@
 
 Esto son una serie de scripts utilizados para crear, mallar (y en el futuro simular automaticamente) alas multielementos en 2D
 
+Hace falta instalar Python, SU2 y Paraview, además la primera vez es posible que haya que instalar algunas librerías de python. Para hacerlo,
+hay que ejecutar en el terminal (después de instalar Python)
+`pip install requirements.txt`
 A falta de automatizar un poco más el proceso, el procedimiento de cero a simular un caso sería el siguiente:
 
 ### 1. Definición de la geometría
@@ -51,5 +54,5 @@ Una vez esté la configuración hecha, hay que ejecutar en el terminal:
 
 ### 4. Resultados
 SU2 irá poniendo en pantalla los residuals, el cl y el cd, pero para poder ver el flujo y una gráfica de los residuals y los coeficientes a lo largo de las iteraciones
-hace falta usar Paraview, también proveo un plantilla con la visualización del flujo y la gráfica ya creadas `flow_view.pvsm`, hay que abrir Paraview, 
+hace falta usar Paraview, también proveo un plantilla con la visualización del flujo y la gráfica ya creadas `flow_view.pvsm`, hay que abrir Paraview,
 y en File>load case navegar hasta esta carpeta, y seleccionar `flow_view`

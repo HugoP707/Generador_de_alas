@@ -68,7 +68,7 @@ GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05]), gaps_normalizados(C2, AOA1, [
 
 ##################################################################
 # A partir de aquí solo hay que tocar los nombres de los perfiles
-# que h
+# y la carpeta para exportar al final
 ##################################################################
 
 main = Airfoil(elem1U, elem1L, {"name": "main"})

@@ -440,7 +440,7 @@ class AirfoilSpline:
       for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
          theta = i/lenPtCloud * 2*np.pi
          print(theta)
-         refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.1)
+         refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.25)
          print(refinado_size / mesh_size)
          self.points.append(
          Point(point_cord[0], point_cord[1], point_cord[2], mesh_size)
@@ -562,11 +562,11 @@ class AirfoilMultiLine:
       self.points = []
       self.lines = []
       # Generate Points object from the point_cloud
-      lenPtCloud = len(point_cloud) - 1
+      lenPtCloud = len(point_cloud)
       for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
          theta = i/lenPtCloud * 2*np.pi
          print(theta)
-         refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.1)
+         refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.25)
          print(refinado_size / mesh_size)
          self.points.append(
          Point(point_cord[0], point_cord[1], point_cord[2], refinado_size)
@@ -576,7 +576,7 @@ class AirfoilMultiLine:
       # Find leading and trailing edge location
       # in points array
       self.te_idx = 0									# max(self.points, key=attrgetter("x"))
-      self.le_idx = (len(self.points) - 1) // 2		# min(self.points, key=attrgetter("x"))
+      self.le_idx = (len(self.points)) // 2		# min(self.points, key=attrgetter("x"))
 
       self.te = self.points[self.te_idx]
       self.le = self.points[self.le_idx]
@@ -615,9 +615,12 @@ class AirfoilMultiLine:
       # create a spline from the up middle point to the trailing edge (up part)
       for i in range(len(self.points)-1):
          self.lines.append(
-            gmsh.model.geo.addLine(self.points[i].tag, self.points[i+1].tag)
+            Line(self.points[i], self.points[i+1])
          )
-      print(self.lines)
+      self.lines.append(
+         Line(self.points[-1], self.points[0])
+      )
+
       with open("testing.txt", "w") as file:
          for point in self.points:
             file.write("{0},{1},{2}\n".format(point.x,point.y,point.z))
@@ -640,16 +643,9 @@ class AirfoilMultiLine:
       -------
       """
       print("Line tags: ")
-      print([
-         self.upper_spline.tag,
-         self.lower_spline.tag,
-         self.closing_line.tag
-      ])
 
       self.bc = gmsh.model.addPhysicalGroup(
-         self.dim, [self.upper_spline.tag,
-                     self.lower_spline.tag,
-                     self.closing_line.tag]
+         self.dim, [self.close_loop_tag]
       )
       gmsh.model.setPhysicalName(self.dim, self.bc, self.name)
 
