@@ -1,0 +1,10 @@
+temp.py
+mesh.su2
+*.vtk
+*.msh
+*.vtk
+*.wrl
+*.stl
+*.mesh
+*.cgn
+*.zip
