@@ -212,12 +212,21 @@ gmsh.model.mesh.field.setAsBackgroundMesh(combined)
 
 gmsh.model.geo.synchronize()
 
+<<<<<<< HEAD
 gmsh.option.setNumber("Mesh.SaveAll", 0)
 gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
 gmsh.option.setNumber("Mesh.Points", 0)
 #gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
 # gmsh.option.setNumber("Mesh.Algorithm", 6)          # frontal-delaunay (+ robusto en BL)
+=======
+#gmsh.option.setNumber("Mesh.SaveAll", 0)
+#gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
+#gmsh.option.setNumber("Mesh.Points", 1)
+#gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
+#gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
+gmsh.option.setNumber("Mesh.Algorithm", 8)          # frontal-delaunay (+ robusto en BL)
+>>>>>>> 6f677c8c415663c11dca88752c55deaad0c0a5ba
 # Disable all automatic characteristic length sources
 gmsh.option.setNumber("Mesh.CharacteristicLengthFromPoints", 0)
 gmsh.option.setNumber("Mesh.CharacteristicLengthFromCurvature", 0)
