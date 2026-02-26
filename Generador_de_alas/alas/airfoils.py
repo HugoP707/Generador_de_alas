@@ -34,7 +34,7 @@ import matplotlib.pyplot as plt
 
 
 POINTS_AIRFOIL = 120//2 # (Que sea divisible por dos para no complicar)
-CLUSTERING = 1.2
+CLUSTERING = 1
 
 
 class NACADefintionError(Exception):

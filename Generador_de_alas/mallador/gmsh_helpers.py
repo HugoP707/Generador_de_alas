@@ -383,7 +383,7 @@ class Rectangle:
       """
       return CurveLoop(self.lines).tag
 
-   def define_bc(self):
+   def define_bc_walls(self):
       """
       Method that define the different markers of the rectangle for the boundary condition
       self.lines[0] => wall_bot
@@ -408,6 +408,18 @@ class Rectangle:
 
       self.bc = [self.bc_in, self.bc_out, self.bc_wall]
 
+   def define_bc_farfield(self):
+      """
+      Method that define the marker of the circle
+      for the boundary condition
+      -------
+      """
+      self.bc = gmsh.model.addPhysicalGroup(self.dim, [line.tag for line in self.lines])
+      self.physical_name = gmsh.model.setPhysicalName(
+         self.dim, self.bc, "farfield")
+
+   def define_bc(self):
+      self.define_bc_farfield()
 
 class AirfoilSpline:
    """

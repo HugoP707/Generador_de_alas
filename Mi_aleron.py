@@ -15,9 +15,9 @@ e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 ##############################
 # Elegir los perfiles a usar:
 ##############################
-elem1U, elem1L = Fx74U, Fx74L
+elem1U, elem1L = naca642320U, naca642320L
 elem2U, elem2L = s1223U, s1223L
-elem3U, elem3L = s1223U, s1223L
+elem3U, elem3L = e423U, e423L
 
 ###############################################################################################
 # Por defecto los perfiles los exporta con 120 puntos, independientemente de de los que entren
@@ -42,16 +42,16 @@ elem3U, elem3L = s1223U, s1223L
 # ignorad la forma "rara" que he usado
 # y poned numeros concretos si preferís
 ########################################
-C0 = 0.5
-C1 = C0*0.5
+C0 = 0.4
+C1 = C0*0.4
 C2 = C1*0.5
 
 print("Cuerdas: ")
 print([C0, C1, C2])
 
-AOA0 = -5
-AOA1 = AOA0 + 35
-AOA2 = AOA1 + 40
+AOA0 = 10
+AOA1 = AOA0 + 40
+AOA2 = AOA1 + 35
 
 print("Ángulos de ataque: ")
 print([AOA0, AOA1, AOA2])
@@ -65,7 +65,7 @@ print([AOA0, AOA1, AOA2])
 # encima de la función os pondrá la documentación, sino podeís leerla en Generador_de_Alas/alas/aleron.py
 
 # Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
-GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05]), gaps_normalizados(C2, AOA1, [-0.2, 0.05])]
+GAPS = [gaps_normalizados(C1, AOA0, [-0.1, 0.1]), gaps_normalizados(C2, AOA1, [-0.22, 0.1])]
 # Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
 #GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
 # Valores absolutos y en los ejes de coordenadas normales
@@ -99,8 +99,8 @@ ala = Alerón([main, flap1, flap2], GAPS, {"name": "RW"})
 ## Estas líneas serían para normalizar el ala (hacerla de longitud unitaria)
 ## La primera la convierte en longitud 1 y la pone con Ángulo de ataque 0
 ## La segunda vuelve a colocar el alerón con el ángulo de ataque que tenía
-#ala.normalizarAleron()
-#ala.rotar(ala.AOATotal)
+ala.normalizarAleron()
+ala.rotar(ala.AOATotal)
 
 print("Cuerda del alerón: " + str(ala.cuerdaTotal))
 print("AOA del alerón: " + str(ala.AOATotal))
