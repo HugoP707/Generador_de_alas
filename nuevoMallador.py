@@ -9,7 +9,32 @@ Multi-airfoil 2D mesh generator (corrected full logic version)
 import math
 from pathlib import Path
 
-from helpers import *
+import numpy as np
+
+
+def gaps_normalizados(cuerda, aoa, gaps, relativos=True):
+   """
+      Función para establecer los huecos entre el borde de salida y el borde de ataque del siguiente perfil
+      - Argumentos:
+         - cuerda: la cuerda del perfil anterior
+         - aoa: el ángulo de ataque del perfil anterior
+         - gaps: [x, y] la distancia horizontal y vertical a la que se encuentra el siguiente perfil del anterior
+            - Estas distancias son con respecto a los ejes relativos del perfil anterior, es decir:
+               - x>0, y=0 --> en tándem
+               - x=0, y>0 --> justo encima de donde acaba (en la dirección normal)
+         - relativos: [True (default)/False] Si quieres que los gaps sean un porcentaje de la cuerda, usa True, si quieres que sean
+            valores absolutos usa False
+   """
+   a = np.deg2rad(aoa)
+   MatRot = np.array([
+      (np.cos(a), -np.sin(a)),
+      (np.sin(a),  np.cos(a))
+   ])
+   if relativos:
+      return np.matmul(MatRot, [cuerda*gaps[0], cuerda*gaps[1]])
+   else:
+      return np.matmul(MatRot, [gaps[0], gaps[1]])
+
 
 import gmsh
 
@@ -52,8 +77,8 @@ CUERDAS = [
 	C0, C1, C2
 ]
 
-AOA0 = 10
-AOA1 = AOA0 + 40
+AOA0 = -10
+AOA1 = AOA0 - 40
 AOA2 = AOA1 + 35
 AOA_LIST = [
 	AOA0, AOA1, AOA2
@@ -62,17 +87,17 @@ AOA_LIST = [
 GAPS = [gaps_normalizados(C1, AOA0, [-0.1, 0.1]), gaps_normalizados(C2, AOA1, [-0.22, 0.1])]
 AIRFOILS = [
 	{
-		"file": "datos_perfiles/NASA SC(2)-1006 AIRFOIL modified2_4 modified modified_closed_te.dat",
+		"file": "datos_perfiles/FX74.dat",
 		"scale": C0,
 		"aoa": AOA0,
 		"translate": (0,0),
 		"pivot": 0   # fracción de cuerda
 	},
 	{
-		"file": "datos_perfiles/s1223.dat",
+		"file": "datos_perfiles/s1223 RTL.dat",
 		"scale": C1,
 		"aoa": AOA1,
-		"translate": -gaps_normalizados(C1, AOA0, [-0.1, 0.1]),
+		"translate": (C0, 0) -gaps_normalizados(C1, AOA0, [-0.1, 0.1]),
 		"pivot": 0
 	}
 ]
@@ -83,7 +108,7 @@ EXT_MESH_SIZE = 0.2
 USE_BOUNDARY_LAYER = True
 FIRST_LAYER = 1e-5
 RATIO = 1.2
-NB_LAYERS = 12
+NB_LAYERS = 30
 
 APPLY_TRANSFINITE = True
 
