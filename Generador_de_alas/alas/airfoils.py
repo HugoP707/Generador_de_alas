@@ -71,45 +71,45 @@ class Airfoil:
 		self._max_extrados = np.max(self._y_upper)
 		# Process coordinates
 		self.norm_factor = 1
-		self._order_data_points()
-		self._normalise_data_points()
+		# self._order_data_points()
+		# self._normalise_data_points()
 
 		# Remove duplicate points from coordinate vectors. x-values must be
-		# unique. Values passed to iterp1d() must be monotonically increasing.
-		self._x_upper, idx_keep = np.unique(self._x_upper, return_index=True)
-		self._y_upper = self._y_upper[idx_keep]
+		# # unique. Values passed to iterp1d() must be monotonically increasing.
+		# self._x_upper, idx_keep = np.unique(self._x_upper, return_index=True)
+		# self._y_upper = self._y_upper[idx_keep]
 
-		self._x_lower, idx_keep = np.unique(self._x_lower, return_index=True)
-		self._y_lower = self._y_lower[idx_keep]
+		# self._x_lower, idx_keep = np.unique(self._x_lower, return_index=True)
+		# self._y_lower = self._y_lower[idx_keep]
 
 		# Make interpolation functions for 'y_upper' and 'y_lower'
-		self._y_upper_interp = interp1d(
-			self._x_upper,
-			self._y_upper,
-			kind='cubic',
-			bounds_error=False,
-			fill_value="extrapolate"
-		)
+		# self._y_upper_interp = interp1d(
+		# 	self._x_upper,
+		# 	self._y_upper,
+		# 	kind='cubic',
+		# 	bounds_error=False,
+		# 	fill_value="extrapolate"
+		# )
 
-		self._y_lower_interp = interp1d(
-			self._x_lower,
-			self._y_lower,
-			kind='cubic',
-			bounds_error=False,
-			fill_value="extrapolate"
-		)
+		# self._y_lower_interp = interp1d(
+		# 	self._x_lower,
+		# 	self._y_lower,
+		# 	kind='cubic',
+		# 	bounds_error=False,
+		# 	fill_value="extrapolate"
+		# )
 
-		self._x_upper, self._y_upper = self._refine_curve(
-				self._x_upper, self._y_upper,
-				n_points=POINTS_AIRFOIL,
-				clustering=CLUSTERING
-			)
+		# self._x_upper, self._y_upper = self._refine_curve(
+		# 		self._x_upper, self._y_upper,
+		# 		n_points=POINTS_AIRFOIL,
+		# 		clustering=CLUSTERING
+		# 	)
 
-		self._x_lower, self._y_lower = self._refine_curve(
-			self._x_lower, self._y_lower,
-			n_points=POINTS_AIRFOIL,
-			clustering=CLUSTERING
-		)
+		# self._x_lower, self._y_lower = self._refine_curve(
+		# 	self._x_lower, self._y_lower,
+		# 	n_points=POINTS_AIRFOIL,
+		# 	clustering=CLUSTERING
+		# )
 
 		self.cuerda = 1
 		self.aoa = 0
@@ -120,11 +120,11 @@ class Airfoil:
 	def __repr__(self):
 		return self.__class__.__name__ + "(upper, lower)"
 
-	def y_upper(self, x):
-		return self._y_upper_interp(x)
+	# def y_upper(self, x):
+	# 	return self._y_upper_interp(x)
 
-	def y_lower(self, x):
-		return self._y_lower_interp(x)
+	# def y_lower(self, x):
+	# 	return self._y_lower_interp(x)
 
 	def max_extrados(self):
 		return self._max_extrados * self.cuerda
@@ -261,7 +261,7 @@ class Airfoil:
 		Normalise data points so that x ranges from 0 to 1
 		"""
 
-		self.norm_factor = abs(self._x_upper[-1] - self._x_upper[0])
+		self.norm_factor = 1#abs(self._x_upper[-1] - self._x_upper[0])
 
 		self._x_upper /= self.norm_factor
 		self._y_upper /= self.norm_factor

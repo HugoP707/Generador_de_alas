@@ -11,8 +11,7 @@ from Generador_de_alas.mallador.gmsh_helpers import *
 # ---------------------------
 # Archivos de los perfiles colocados
 airfoil_files = [
-	# "datos_perfiles/NASA SC(2)-1006 AIRFOIL modified2_4 modified modified_closed_te.dat"
-   "tests/alaTest1/main.txt",
+	"tests/alaTest1/main.txt",
    "tests/alaTest1/flap1.txt",
    "tests/alaTest1/flap2.txt",
 ]
@@ -27,17 +26,22 @@ airfoil_names = [
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
 output_su2 = "airfoil_simple.su2"
-#output_cgns = "airfoil_simple.cgns"
+output_cgns = "airfoil_simple.cgns"
 output_file = output_msh
+
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
 # Más que nada para revisar cosas, no hace falta si no te da errores
 preview_geometria = False
 
+##############
+## SETTINGS ##
+##############
+mallaCuadrada = False
+
 ###########################################################
 ### SETTINGS DEL FARFIELD ###
 ###########################################################
-
 use_circle_farfield = True	# True -> círculo, False -> caja
 farfield_radius = 6			# radio del dominio exterior (si usas círculo)
 circlex_offset = 2			# adelantar el perfil dentro del circulo
@@ -52,7 +56,7 @@ tunnelx_offset = 2			#adelantar el perfil dentro de la caja
 ###########################################################
 first_layer_height = 1.1e-5   # altura primera capa BL
 bl_ratio = 1.2
-espesor_bl = 5e-3             # Espesor total
+espesor_bl = 4.5e-3             # Espesor total
 
 
 ##########################################################
@@ -72,7 +76,7 @@ mesh_size_airfoil = 0.001   # tamaño en el contorno del perfil
 distanciaMinRefinamiento = 0.02
 distanciaMaxRefinamiento = farfield_radius * 1
 
-mesh_size_close =  espesor_bl * 1.2  # tamaño cerca del ala
+mesh_size_close =  0.001 # espesor_bl * 1.2  # tamaño cerca del ala
 farfield_mesh_size = 0.33      # tamaño lejos del ala
 
 mesh_size_estela = 0.1
@@ -112,6 +116,10 @@ else:
 
 gmsh.model.geo.synchronize()
 surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_geometria)
+
+if mallaCuadrada:
+	gmsh.model.geo.mesh.setRecombine(2, surface.tag)
+
 gmsh.model.geo.synchronize()
 
 
@@ -212,8 +220,9 @@ gmsh.model.mesh.field.setAsBackgroundMesh(combined)
 
 gmsh.model.geo.synchronize()
 
-#gmsh.option.setNumber("Mesh.SaveAll", 0)
-#gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
+
+gmsh.option.setNumber("Mesh.SaveAll", 0)
+gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
 #gmsh.option.setNumber("Mesh.Points", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)

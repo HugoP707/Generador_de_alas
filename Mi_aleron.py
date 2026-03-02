@@ -5,8 +5,10 @@ from Generador_de_alas.alas.aleron import *
 
 # Perfiles de ejemplo, importarlos desde la carpeta que sea (en estos casos están en esas
 # Como esto lo copié de otro tío, lo importa como dos curvas, la de extradós e intradós
+print(import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat"))
 naca642320U, naca642320L = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 naca64AU, naca64AL = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
+nasaSC21006U, nasaSC21006L = import_airfoil_data("datos_perfiles/NASA SC(2)-1006 AIRFOIL modified2_4 modified modified_closed_te.dat")
 Fx74U, Fx74L = import_airfoil_data("datos_perfiles/FX74.dat")
 s1223U, s1223L = import_airfoil_data("datos_perfiles/s1223.dat")
 e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
@@ -15,7 +17,7 @@ e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 ##############################
 # Elegir los perfiles a usar:
 ##############################
-elem1U, elem1L = naca642320U, naca642320L
+elem1U, elem1L = nasaSC21006U, nasaSC21006L
 elem2U, elem2L = s1223U, s1223L
 elem3U, elem3L = e423U, e423L
 
@@ -49,7 +51,7 @@ C2 = C1*0.5
 print("Cuerdas: ")
 print([C0, C1, C2])
 
-AOA0 = 10
+AOA0 = 8
 AOA1 = AOA0 + 40
 AOA2 = AOA1 + 35
 
@@ -65,7 +67,7 @@ print([AOA0, AOA1, AOA2])
 # encima de la función os pondrá la documentación, sino podeís leerla en Generador_de_Alas/alas/aleron.py
 
 # Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
-GAPS = [gaps_normalizados(C1, AOA0, [-0.1, 0.1]), gaps_normalizados(C2, AOA1, [-0.22, 0.1])]
+GAPS = [gaps_normalizados(C1, AOA0, [-0.1, 0.2]), gaps_normalizados(C2, AOA1, [-0.22, 0.1])]
 # Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
 #GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
 # Valores absolutos y en los ejes de coordenadas normales
