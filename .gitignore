@@ -1,6 +1,6 @@
-/__pycache__/
-/lib/__pycache__/
-/tests/
+/__pycache__/**
+/lib/__pycache__/**
+
 /Javafoils/
 
 /**.pyc
