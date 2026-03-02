@@ -27,17 +27,18 @@ airfoil_names = [
 output_msh = "airfoil_simple.msh"
 output_su2 = "airfoil_simple.su2"
 output_cgns = "airfoil_simple.cgns"
-output_file = output_msh
+output_file = output_su2
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
-
-# Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = False
 
 ##############
 ## SETTINGS ##
 ##############
 mallaCuadrada = False
+
+# Más que nada para revisar cosas, no hace falta si no te da errores
+preview_geometria = False
+
 
 ###########################################################
 ### SETTINGS DEL FARFIELD ###
@@ -244,7 +245,7 @@ gmsh.model.mesh.optimize("Netgen")
 gmsh.model.mesh.optimize("Laplace2D", 5) # La librería que he copiado lo usaba, yo no he visto gran diferencia
 
 # gmsh.option.setNumber("Mesh.MshFileVersion", 2.2)
-gmsh.write("to_ansys.cgns")
+gmsh.write(output_file)
 
 gmsh.fltk.run()
 
