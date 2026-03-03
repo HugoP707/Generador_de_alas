@@ -12,21 +12,22 @@ from Generador_de_alas.mallador.gmsh_helpers import *
 # Archivos de los perfiles colocados
 airfoil_files = [
 	"tests/alaTest1/main.txt",
-   "tests/alaTest1/flap1.txt",
-   "tests/alaTest1/flap2.txt",
+	"tests/alaTest1/flap1.txt",
+	"tests/alaTest1/flap2.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
 airfoil_names = [
-   "main",
-   "flap1",
-   "flap2",
+	"main",
+	"flap1",
+	"flap2",
 ]
 
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
 output_su2 = "airfoil_simple.su2"
 output_cgns = "airfoil_simple.cgns"
+output_openfoam = "airfoil_openfoam.msh"
 output_file = output_su2
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
@@ -39,18 +40,21 @@ mallaCuadrada = False
 # Más que nada para revisar cosas, no hace falta si no te da errores
 preview_geometria = False
 
+# OPENFOAM 2D (extrusión 3D)
+export_openfoam_3D = False
+of_thickness = 1
+of_layers = 1
 
 ###########################################################
 ### SETTINGS DEL FARFIELD ###
 ###########################################################
-use_circle_farfield = True	# True -> círculo, False -> caja
-farfield_radius = 6			# radio del dominio exterior (si usas círculo)
-circlex_offset = 2			# adelantar el perfil dentro del circulo
+use_circle_farfield = False 	# True -> círculo, False -> caja
+farfield_radius = 6				# radio del dominio exterior (si usas círculo)
+circlex_offset = 2				# adelantar el perfil dentro del circulo
 
-tunnel_length = 12.0
-tunnel_height = 5.0
-tunnelx_offset = 2			#adelantar el perfil dentro de la caja
-
+tunnel_length = 10.0
+tunnel_height = 6.0
+tunnelx_offset = 3			#adelantar el perfil dentro de la caja
 
 ###########################################################
 ## SETTINGS CAPA LÍMITE
@@ -58,7 +62,6 @@ tunnelx_offset = 2			#adelantar el perfil dentro de la caja
 first_layer_height = 1.1e-5   # altura primera capa BL
 bl_ratio = 1.2
 espesor_bl = 4.5e-3             # Espesor total
-
 
 ##########################################################
 ## SETTINGS REFINAMIENTO
@@ -95,25 +98,25 @@ gmsh.initialize()
 airfoils = []
 
 for foil_points, name in zip(all_airfoil_points, airfoil_names):
-   print(len(foil_points))
-   airfoils.append(
-      AirfoilSpline(
-         foil_points, mesh_size_airfoil, name)
-   )
+	print(len(foil_points))
+	airfoils.append(
+		AirfoilSpline(
+			foil_points, mesh_size_airfoil, name)
+	)
 
 gmsh.model.geo.synchronize()
 
 for airfoil in airfoils:
-   airfoil.gen_skin()
+	airfoil.gen_skin()
 
 # crear farfield
 if use_circle_farfield:
-   #ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
-   ext_domain = Circle(0+circlex_offset, 0, 0, radius=farfield_radius,
-                        mesh_size=farfield_mesh_size)
+	#ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
+	ext_domain = Circle(0+circlex_offset, 0, 0, radius=farfield_radius,
+								mesh_size=farfield_mesh_size)
 else:
-   ext_domain = Rectangle(0+tunnelx_offset, 0, 0, tunnel_length, tunnel_height,
-                           mesh_size=farfield_mesh_size)
+	ext_domain = Rectangle(0+tunnelx_offset, 0, 0, tunnel_length, tunnel_height,
+									mesh_size=farfield_mesh_size)
 
 gmsh.model.geo.synchronize()
 surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_geometria)
@@ -127,32 +130,33 @@ gmsh.model.geo.synchronize()
 # crear superficie con agujeros = outer_loop + todos los inner loops
 airfoil_curves = []
 for airfoil in airfoils:
-   curv = [airfoil.upper_spline.tag,
-            airfoil.lower_spline.tag,
-            airfoil.closing_line.tag
-            ]
+	curv = [
+				airfoil.upper_spline.tag,
+				airfoil.lower_spline.tag,
+				airfoil.closing_line.tag
+			]
 
-   airfoil_curves += curv
-   # Creates a new mesh field of type 'BoundaryLayer' and assigns it an ID (f).
-   f = gmsh.model.mesh.field.add('BoundaryLayer')
+	airfoil_curves += curv
+	# Creates a new mesh field of type 'BoundaryLayer' and assigns it an ID (f).
+	f = gmsh.model.mesh.field.add('BoundaryLayer')
 
-   gmsh.model.mesh.field.setNumbers(
-         f, "FanPointsList", [airfoil.le.tag] + [airfoil.te.tag])
-                        # airfoil.le.tag + i for i in range(-2, 2)
-   #gmsh.model.mesh.field.setNumber(
-   #   f, "BoundaryLayerFanElements", 20)
-   # Add the curves where we apply the boundary layer (around the airfoil for us)
-   gmsh.model.mesh.field.setNumbers(f, 'CurvesList', curv)
-   gmsh.model.mesh.field.setNumber(f, 'Size', first_layer_height)  # size 1st layer
-   gmsh.model.mesh.field.setNumber(f, 'Ratio', bl_ratio)  # Growth ratio
-   # Total thickness of boundary layer
-   gmsh.model.mesh.field.setNumber(f, 'Thickness', espesor_bl)
+	gmsh.model.mesh.field.setNumbers(
+			f, "FanPointsList", [airfoil.le.tag] + [airfoil.te.tag])
+								# airfoil.le.tag + i for i in range(-2, 2)
 
-   # Forces to use quads and not triangle when =1 (i.e. true)
-   gmsh.model.mesh.field.setNumber(f, 'Quads', 1)
+	gmsh.option.setNumber("Mesh.BoundaryLayerFanElements", 20)
+	# Add the curves where we apply the boundary layer (around the airfoil for us)
+	gmsh.model.mesh.field.setNumbers(f, 'CurvesList', curv)
+	gmsh.model.mesh.field.setNumber(f, 'Size', first_layer_height)  # size 1st layer
+	gmsh.model.mesh.field.setNumber(f, 'Ratio', bl_ratio)  # Growth ratio
+	# Total thickness of boundary layer
+	gmsh.model.mesh.field.setNumber(f, 'Thickness', espesor_bl)
 
-   # Enter the points where we want a "fan" (points must be at end on line)(only te for us)
-   gmsh.model.mesh.field.setAsBoundaryLayer(f)
+	# Forces to use quads and not triangle when =1 (i.e. true)
+	gmsh.model.mesh.field.setNumber(f, 'Quads', 1)
+
+	# Enter the points where we want a "fan" (points must be at end on line)(only te for us)
+	gmsh.model.mesh.field.setAsBoundaryLayer(f)
 
 ext_domain.define_bc()
 surface.define_bc()
@@ -161,7 +165,7 @@ surface.define_bc()
 # estela.define_bc()
 
 for airfoil in airfoils:
-   airfoil.define_bc()
+	airfoil.define_bc()
 
 gmsh.model.geo.synchronize()
 
@@ -193,37 +197,37 @@ gmsh.model.mesh.field.setNumber(zonaRefinamiento, "SizeMax", farfield_mesh_size)
 gmsh.model.mesh.field.setNumber(zonaRefinamiento, "DistMin", distanciaMinRefinamiento)
 gmsh.model.mesh.field.setNumber(zonaRefinamiento, "DistMax", distanciaMaxRefinamiento)
 
-# balls = []
-# for airfoil in airfoils:
-#    ball = gmsh.model.mesh.field.add("Ball")
-#    gmsh.model.mesh.field.setNumber(ball, "XCenter", airfoil.le.x)
-#    gmsh.model.mesh.field.setNumber(ball, "YCenter", airfoil.le.y)
-#    gmsh.model.mesh.field.setNumber(ball, "ZCenter", airfoil.le.z)
-#    gmsh.model.mesh.field.setNumber(ball, "Radius", 0.01)   # radio de influencia
-#    gmsh.model.mesh.field.setNumber(ball, "VIn", mesh_size_close / 2)    # tamaño mínimo dentro
-#    #gmsh.model.mesh.field.setNumber(ball, "VOut", 0.01)     # tamaño fuera
+balls = []
+for airfoil in airfoils:
+	ball = gmsh.model.mesh.field.add("Ball")
+	gmsh.model.mesh.field.setNumber(ball, "XCenter", airfoil.le.x)
+	gmsh.model.mesh.field.setNumber(ball, "YCenter", airfoil.le.y)
+	gmsh.model.mesh.field.setNumber(ball, "ZCenter", airfoil.le.z)
+	gmsh.model.mesh.field.setNumber(ball, "Radius", 0.01)   # radio de influencia
+	gmsh.model.mesh.field.setNumber(ball, "VIn", mesh_size_close / 2)    # tamaño mínimo dentro
+	#gmsh.model.mesh.field.setNumber(ball, "VOut", 0.01)     # tamaño fuera
 
-#    #gmsh.model.mesh.field.setAsBackgroundMesh(ball)
-#    ball2 = gmsh.model.mesh.field.add("Ball")
-#    gmsh.model.mesh.field.setNumber(ball2, "XCenter", airfoil.te.x)
-#    gmsh.model.mesh.field.setNumber(ball2, "YCenter", airfoil.te.y)
-#    gmsh.model.mesh.field.setNumber(ball2, "ZCenter", airfoil.te.z)
-#    gmsh.model.mesh.field.setNumber(ball2, "Radius", 0.02)   # radio de influencia
-#    gmsh.model.mesh.field.setNumber(ball2, "VIn", mesh_size_close / 2)    # tamaño mínimo dentro
-#    #gmsh.model.mesh.field.setNumber(ball, "VOut", 0.01)     # tamaño fuera
+	#gmsh.model.mesh.field.setAsBackgroundMesh(ball)
+	ball2 = gmsh.model.mesh.field.add("Ball")
+	gmsh.model.mesh.field.setNumber(ball2, "XCenter", airfoil.te.x)
+	gmsh.model.mesh.field.setNumber(ball2, "YCenter", airfoil.te.y)
+	gmsh.model.mesh.field.setNumber(ball2, "ZCenter", airfoil.te.z)
+	gmsh.model.mesh.field.setNumber(ball2, "Radius", 0.02)   # radio de influencia
+	gmsh.model.mesh.field.setNumber(ball2, "VIn", mesh_size_close / 2)    # tamaño mínimo dentro
+	#gmsh.model.mesh.field.setNumber(ball, "VOut", 0.01)     # tamaño fuera
 
-#    balls.append(ball)
-#    balls.append(ball2)
+	balls.append(ball)
+	balls.append(ball2)
 
 combined = gmsh.model.mesh.field.add("Min")
-gmsh.model.mesh.field.setNumbers(combined, "FieldsList", [zonaRefinamiento])# + balls)
+gmsh.model.mesh.field.setNumbers(combined, "FieldsList", [zonaRefinamiento] + balls)
 gmsh.model.mesh.field.setAsBackgroundMesh(combined)
 
 gmsh.model.geo.synchronize()
 
 
-gmsh.option.setNumber("Mesh.SaveAll", 0)
-gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
+# gmsh.option.setNumber("Mesh.SaveAll", 0)
+# gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
 #gmsh.option.setNumber("Mesh.Points", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
@@ -239,8 +243,43 @@ gmsh.option.setNumber("Mesh.CharacteristicLengthExtendFromBoundary", 0)
 
 
 # Generate mesh
+# -----------------------------
+# GENERACIÓN MALLA
+# -----------------------------
+gmsh.model.geo.synchronize()
+
+if export_openfoam_3D:
+	# Extruir superficie fluida
+	ext = gmsh.model.geo.extrude(
+		[(2, surface.tag)],
+		0, 0, of_thickness,
+		[of_layers],
+		recombine=True
+	)
+
+	gmsh.model.geo.synchronize()
+
+	volume_tag = ext[1][1]   # volumen creado
+
+	# Crear Physical Volume
+	gmsh.model.addPhysicalGroup(3, [volume_tag], name="fluido")
+
+	# Front y Back
+	front_surface = surface.tag
+	back_surface = ext[0][1]
+
+	gmsh.model.addPhysicalGroup(2, [front_surface], name="front")
+	gmsh.model.addPhysicalGroup(2, [back_surface], name="back")
+
+else:
+	gmsh.model.addPhysicalGroup(2, [surface.tag], name="fluido")
+
+	gmsh.model.geo.synchronize()
+
+# Generar malla
 gmsh.model.mesh.generate(1)
-gmsh.model.mesh.generate(2)
+gmsh.model.mesh.generate(3 if export_openfoam_3D else 2)
+
 gmsh.model.mesh.optimize("Netgen")
 gmsh.model.mesh.optimize("Laplace2D", 5) # La librería que he copiado lo usaba, yo no he visto gran diferencia
 

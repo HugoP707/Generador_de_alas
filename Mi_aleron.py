@@ -51,9 +51,9 @@ C2 = C1*0.5
 print("Cuerdas: ")
 print([C0, C1, C2])
 
-AOA0 = 8
-AOA1 = AOA0 + 40
-AOA2 = AOA1 + 35
+AOA0 = 7
+AOA1 = AOA0 + 33
+AOA2 = AOA1 + 33
 
 print("Ángulos de ataque: ")
 print([AOA0, AOA1, AOA2])
@@ -67,7 +67,7 @@ print([AOA0, AOA1, AOA2])
 # encima de la función os pondrá la documentación, sino podeís leerla en Generador_de_Alas/alas/aleron.py
 
 # Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
-GAPS = [gaps_normalizados(C1, AOA0, [-0.1, 0.2]), gaps_normalizados(C2, AOA1, [-0.22, 0.1])]
+GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.2]), gaps_normalizados(C2, AOA1, [-0.22, 0.2])]
 # Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
 #GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
 # Valores absolutos y en los ejes de coordenadas normales
@@ -110,6 +110,6 @@ for foil in ala.foils:
 	print(foil.max_extrados())
 
 ala.plot()
-ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest1", sameFile=False, inFileSeparador="\n\n")
+#ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest1", sameFile=False, inFileSeparador="\n\n")
 # En Javafoil se ponen todos en un archivo y separados por una fila con 9999,9	9999,9
-#, inFileSeparador="9999,9\t9999,9\n")
+ala.exportarJavaFoil("tests/JavaFoilTests/2/")
