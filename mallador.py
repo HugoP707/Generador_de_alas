@@ -38,7 +38,7 @@ all_airfoil_points = [read_profile(file) for file in airfoil_files]
 mallaCuadrada = False
 
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = False
+preview_geometria = True
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -105,6 +105,8 @@ for foil_points, name in zip(all_airfoil_points, airfoil_names):
 	)
 
 gmsh.model.geo.synchronize()
+
+# gmsh.fltk.run()
 
 for airfoil in airfoils:
 	airfoil.gen_skin()
@@ -278,7 +280,10 @@ else:
 
 # Generar malla
 gmsh.model.mesh.generate(1)
-gmsh.model.mesh.generate(3 if export_openfoam_3D else 2)
+if not export_openfoam_3D:
+	gmsh.model.mesh.generate(2)
+else:
+	gmsh.model.mesh.generate(3)
 
 gmsh.model.mesh.optimize("Netgen")
 gmsh.model.mesh.optimize("Laplace2D", 5) # La librería que he copiado lo usaba, yo no he visto gran diferencia

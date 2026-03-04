@@ -5,7 +5,7 @@ from Generador_de_alas.alas.aleron import *
 
 # Perfiles de ejemplo, importarlos desde la carpeta que sea (en estos casos están en esas
 # Como esto lo copié de otro tío, lo importa como dos curvas, la de extradós e intradós
-print(import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat"))
+# print(import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat"))
 naca642320U, naca642320L = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 naca64AU, naca64AL = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 nasaSC21006U, nasaSC21006L = import_airfoil_data("datos_perfiles/NASA SC(2)-1006 AIRFOIL modified2_4 modified modified_closed_te.dat")
@@ -13,11 +13,12 @@ Fx74U, Fx74L = import_airfoil_data("datos_perfiles/FX74.dat")
 s1223U, s1223L = import_airfoil_data("datos_perfiles/s1223.dat")
 e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 
-
+print(s1223U)
+print(s1223L)
 ##############################
 # Elegir los perfiles a usar:
 ##############################
-elem1U, elem1L = nasaSC21006U, nasaSC21006L
+elem1U, elem1L = Fx74U, Fx74L
 elem2U, elem2L = s1223U, s1223L
 elem3U, elem3L = e423U, e423L
 
@@ -44,16 +45,16 @@ elem3U, elem3L = e423U, e423L
 # ignorad la forma "rara" que he usado
 # y poned numeros concretos si preferís
 ########################################
-C0 = 0.4
-C1 = C0*0.4
+C0 = 0.33
+C1 = C0*0.45
 C2 = C1*0.5
 
 print("Cuerdas: ")
 print([C0, C1, C2])
 
-AOA0 = 7
-AOA1 = AOA0 + 33
-AOA2 = AOA1 + 33
+AOA0 = 10
+AOA1 = AOA0 + 25
+AOA2 = AOA1 + 27
 
 print("Ángulos de ataque: ")
 print([AOA0, AOA1, AOA2])
@@ -67,7 +68,7 @@ print([AOA0, AOA1, AOA2])
 # encima de la función os pondrá la documentación, sino podeís leerla en Generador_de_Alas/alas/aleron.py
 
 # Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
-GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.2]), gaps_normalizados(C2, AOA1, [-0.22, 0.2])]
+GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.12]), gaps_normalizados(C2, AOA1, [-0.22, 0.2])]
 # Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
 #GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
 # Valores absolutos y en los ejes de coordenadas normales
@@ -110,6 +111,6 @@ for foil in ala.foils:
 	print(foil.max_extrados())
 
 ala.plot()
-#ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest1", sameFile=False, inFileSeparador="\n\n")
+ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest1", sameFile=False, inFileSeparador="\n\n")
 # En Javafoil se ponen todos en un archivo y separados por una fila con 9999,9	9999,9
-ala.exportarJavaFoil("tests/JavaFoilTests/2/")
+# ala.exportarJavaFoil("tests/JavaFoilTests/2/")

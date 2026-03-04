@@ -71,15 +71,18 @@ def import_airfoil_data(file_path):
 	except StopIteration:
 		split_index = len(airfoil_points) // 2
 
+	split_index = len(airfoil_points) // 2
 	upper_points = airfoil_points[:split_index + 1]
-	lower_points = airfoil_points[split_index + 1:]
+	lower_points = airfoil_points[split_index:]
 
 	# Ensure lower points start from trailing edge
-	if lower_points and lower_points[0][0] == 0.0:
-		lower_points = lower_points[::-1]
+	# if lower_points and lower_points[0][0] == 0.0:
+	lower_points = lower_points[::-1]
 
 	# Combine and remove duplicates
 	x_up, y_up = zip(*upper_points) if upper_points else ([], [])
 	x_lo, y_lo = zip(*lower_points) if lower_points else ([], [])
 
-	return (x_up, y_up), (x_lo, y_lo)
+	x_lo = list(x_lo) + [x_up[0]]
+	y_lo = list(y_lo) + [y_up[0]]
+	return upper_points, lower_points

@@ -61,8 +61,8 @@ class Airfoil:
 		self._max_extrados = 0
 		####
 		# Always use Numpy arrays
-		upper = np.array(upper, dtype=float)
-		lower = np.array(lower, dtype=float)
+		upper = np.array(upper, dtype=float).transpose()
+		lower = np.array(lower, dtype=float).transpose()
 
 		# Unpack coordinates
 		self._x_upper, self._y_upper = upper
