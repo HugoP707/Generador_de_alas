@@ -11,9 +11,9 @@ from Generador_de_alas.mallador.gmsh_helpers import *
 # ---------------------------
 # Archivos de los perfiles colocados
 airfoil_files = [
-	"tests/alaTest2/main.txt",
-	"tests/alaTest2/flap1.txt",
-	"tests/alaTest2/flap2.txt",
+	"tests/alaTest1/main.txt",
+	"tests/alaTest1/flap1.txt",
+	"tests/alaTest1/flap2.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
@@ -23,9 +23,11 @@ airfoil_names = [
 	"flap2",
 ]
 
+# Dirección del archivo de la malla
+output_path = "tests/Su2tests/ala2_alaTest1/"
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
-output_su2 = "airfoil_simple.su2"
+output_su2 = output_path + "airfoil_simple.su2"
 output_cgns = "airfoil_simple.cgns"
 output_openfoam = "airfoil_openfoam.msh"
 output_file = output_su2
@@ -38,7 +40,7 @@ all_airfoil_points = [read_profile(file) for file in airfoil_files]
 mallaCuadrada = False
 
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = True
+preview_geometria = False
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -220,6 +222,16 @@ for airfoil in airfoils:
 
 	balls.append(ball)
 	balls.append(ball2)
+
+bolaEstela = gmsh.model.mesh.field.add("Ball")
+gmsh.model.mesh.field.setNumber(bolaEstela, "XCenter", airfoils[-1].te.x + 0.5)
+gmsh.model.mesh.field.setNumber(bolaEstela, "YCenter", airfoils[-1].te.y)
+gmsh.model.mesh.field.setNumber(bolaEstela, "ZCenter", airfoils[-1].te.z)
+gmsh.model.mesh.field.setNumber(bolaEstela, "Radius", 0.5)   # radio de influencia
+# TODO: Hacer un parámetro
+gmsh.model.mesh.field.setNumber(bolaEstela, "VIn", mesh_size_close * 10)    # tamaño mínimo dentro
+
+balls.append(bolaEstela)
 
 combined = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(combined, "FieldsList", [zonaRefinamiento] + balls)
