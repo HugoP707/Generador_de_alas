@@ -45,15 +45,15 @@ elem3U, elem3L = e423U, e423L
 # ignorad la forma "rara" que he usado
 # y poned numeros concretos si preferís
 ########################################
-C0 = 0.33
+C0 = 0.78
 C1 = C0*0.45
 C2 = C1*0.5
 
 print("Cuerdas: ")
 print([C0, C1, C2])
 
-AOA0 = 10
-AOA1 = AOA0 + 25
+AOA0 = 0
+AOA1 = AOA0 + 30
 AOA2 = AOA1 + 27
 
 print("Ángulos de ataque: ")
@@ -103,7 +103,7 @@ ala = Alerón([main, flap1, flap2], GAPS, {"name": "RW"})
 ## La primera la convierte en longitud 1 y la pone con Ángulo de ataque 0
 ## La segunda vuelve a colocar el alerón con el ángulo de ataque que tenía
 ala.normalizarAleron()
-ala.rotar(ala.AOATotal)
+# ala.rotar(ala.AOATotal)
 
 print("Cuerda del alerón: " + str(ala.cuerdaTotal))
 print("AOA del alerón: " + str(ala.AOATotal))
@@ -111,6 +111,6 @@ for foil in ala.foils:
 	print(foil.max_extrados())
 
 ala.plot()
-ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest1", sameFile=False, inFileSeparador="\n\n")
+ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest2", sameFile=False, inFileSeparador="\n\n")
 # En Javafoil se ponen todos en un archivo y separados por una fila con 9999,9	9999,9
 # ala.exportarJavaFoil("tests/JavaFoilTests/2/")

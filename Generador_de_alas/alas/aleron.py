@@ -13,151 +13,159 @@ from Generador_de_alas.alas.airfoils import *
 
 
 def gaps_normalizados(cuerda, aoa, gaps, relativos=True):
-   """
-      Función para establecer los huecos entre el borde de salida y el borde de ataque del siguiente perfil
-      - Argumentos:
-         - cuerda: la cuerda del perfil anterior
-         - aoa: el ángulo de ataque del perfil anterior
-         - gaps: [x, y] la distancia horizontal y vertical a la que se encuentra el siguiente perfil del anterior
-            - Estas distancias son con respecto a los ejes relativos del perfil anterior, es decir:
-               - x>0, y=0 --> en tándem
-               - x=0, y>0 --> justo encima de donde acaba (en la dirección normal)
-         - relativos: [True (default)/False] Si quieres que los gaps sean un porcentaje de la cuerda, usa True, si quieres que sean
-            valores absolutos usa False
-   """
-   a = np.deg2rad(aoa)
-   MatRot = np.array([
-      (np.cos(a), -np.sin(a)),
-      (np.sin(a),  np.cos(a))
-   ])
-   if relativos:
-      return np.matmul(MatRot, [cuerda*gaps[0], cuerda*gaps[1]])
-   else:
-      return np.matmul(MatRot, [gaps[0], gaps[1]])
+	"""
+		Función para establecer los huecos entre el borde de salida y el borde de ataque del siguiente perfil
+		- Argumentos:
+			- cuerda: la cuerda del perfil anterior
+			- aoa: el ángulo de ataque del perfil anterior
+			- gaps: [x, y] la distancia horizontal y vertical a la que se encuentra el siguiente perfil del anterior
+				- Estas distancias son con respecto a los ejes relativos del perfil anterior, es decir:
+					- x>0, y=0 --> en tándem
+					- x=0, y>0 --> justo encima de donde acaba (en la dirección normal)
+			- relativos: [True (default)/False] Si quieres que los gaps sean un porcentaje de la cuerda, usa True, si quieres que sean
+				valores absolutos usa False
+	"""
+	a = np.deg2rad(aoa)
+	MatRot = np.array([
+		(np.cos(a), -np.sin(a)),
+		(np.sin(a),  np.cos(a))
+	])
+	if relativos:
+		return np.matmul(MatRot, [cuerda*gaps[0], cuerda*gaps[1]])
+	else:
+		return np.matmul(MatRot, [gaps[0], gaps[1]])
 
 
 class Alerón:
-   def __init__(self, foils, gaps=None, meta=None):
-      self.foils = foils # Una lista con todos los airfoils del alerón
-      self.meta = meta
-      self.gaps = [[0, 0] for i in range(0, len(foils)-1)] if gaps == None else gaps
-      self.cuerdaTotal = 0
-      self.AOATotal = 0
+	def __init__(self, foils, gaps=None, meta=None):
+		self.foils = foils # Una lista con todos los airfoils del alerón
+		self.meta = meta
+		self.gaps = [[0, 0] for i in range(0, len(foils)-1)] if gaps == None else gaps
+		self.cuerdaTotal = 0
+		self.AOATotal = 0
 
-      self.ajustarCoords()
+		self.ajustarCoords()
 
-   def ajustarCoords(self):
-      currentx, currenty = 0, 0
-      for i in range(0, len(self.foils)-1):
-         current = self.foils[i]
-         print(self.gaps[i][0], self.gaps[i][1])
-         currentx += (current.cuerda * np.cos(np.deg2rad(current.aoa))) + self.gaps[i][0]
-         currenty += (current.cuerda * np.sin(np.deg2rad(current.aoa))) + self.gaps[i][1]
-         self.foils[i+1].translate(currentx, currenty)
+	def ajustarCoords(self):
+		currentx, currenty = 0, 0
+		for i in range(0, len(self.foils)-1):
+			current = self.foils[i]
+			print(self.gaps[i][0], self.gaps[i][1])
+			currentx += (current.cuerda * np.cos(np.deg2rad(current.aoa))) + self.gaps[i][0]
+			currenty += (current.cuerda * np.sin(np.deg2rad(current.aoa))) + self.gaps[i][1]
+			self.foils[i+1].translate(currentx, currenty)
 
-      current = self.foils[-1]
-      currentx += (current.cuerda * np.cos(np.deg2rad(current.aoa)))
-      currenty += (current.cuerda * np.sin(np.deg2rad(current.aoa)))
-      self.cuerdaTotal = sqrt(currentx**2 + currenty**2)
-      self.AOATotal = np.rad2deg(np.arctan(currenty / currentx))
+		current = self.foils[-1]
+		currentx += (current.cuerda * np.cos(np.deg2rad(current.aoa)))
+		currenty += (current.cuerda * np.sin(np.deg2rad(current.aoa)))
+		self.cuerdaTotal = sqrt(currentx**2 + currenty**2)
+		self.AOATotal = np.rad2deg(np.arctan(currenty / currentx))
+		self.puntoFinal = [currentx, currenty]
 
-   def normalizarAleron(self):
-      for foil in self.foils:
-         foil.escalar(1/self.cuerdaTotal)
-         foil.rotar(-self.AOATotal)
+	def normalizarAleron(self):
+		for foil in self.foils:
+			foil.escalar(1/self.cuerdaTotal)
 
-   def rotar(self, alfa):
-      for foil in self.foils:
-         foil.rotar(alfa)
+		self.cuerdaTotal = self.cuerdaTotal * 1/self.cuerdaTotal
+		self.AOATotal
 
-   def plot(self, *, show=True, save=False, settings={}):
-      """
-      Plot the airfoil and camber line
+	def rotar(self, alfa):
+		self.AOATotal += alfa
 
-      Note:
-         * 'show' and/or 'save' must be True
+		for foil in self.foils:
+			foil.rotar(alfa)
 
-      Args:
-         :show: (bool) Create an interactive plot
-         :save: (bool) Save plot to file
-         :settings: (bool) Plot settings
+	def plot(self, *, show=True, save=False, settings={}):
+		"""
+		Plot the airfoil and camber line
 
-      Plot settings:
-         * Plot settings must be a dictionary
-         * Allowed keys:
+		Note:
+			* 'show' and/or 'save' must be True
 
-         'points': (bool) ==> Plot coordinate points
-         'camber': (bool) ==> Plot camber
-         'chord': (bool) ==> Plot chord
-         'path': (str) ==> Output path (directory path, must exists)
-         'file_name': (str) ==> Full file name
+		Args:
+			:show: (bool) Create an interactive plot
+			:save: (bool) Save plot to file
+			:settings: (bool) Plot settings
 
-      Returns:
-         None or 'file_name' (full path) if 'save' is True
-      """
+		Plot settings:
+			* Plot settings must be a dictionary
+			* Allowed keys:
 
-      fig = plt.figure()
-      ax = fig.add_subplot(1, 1, 1)
-      ax.set_xlim([0, 1])
-      ax.set_xlabel('x')
-      ax.set_ylabel('y')
-      ax.axis('equal')
-      ax.grid()
+			'points': (bool) ==> Plot coordinate points
+			'camber': (bool) ==> Plot camber
+			'chord': (bool) ==> Plot chord
+			'path': (str) ==> Output path (directory path, must exists)
+			'file_name': (str) ==> Full file name
 
-      for foil in self.foils:
-         ax.plot(foil._x_upper, foil._y_upper, '-', color='blue')
-         ax.plot(foil._x_lower, foil._y_lower, '-', color='green')
+		Returns:
+			None or 'file_name' (full path) if 'save' is True
+		"""
 
-         if settings.get('points', False):
-            ax.plot(foil.all_points[0, :], foil.all_points[1, :], '.', color='grey')
+		fig = plt.figure()
+		ax = fig.add_subplot(1, 1, 1)
+		ax.set_xlim([0, 1])
+		ax.set_xlabel('x')
+		ax.set_ylabel('y')
+		ax.axis('equal')
+		ax.grid()
 
-         if settings.get('camber', False):
-            x = np.linspace(0, 1, int(POINTS_AIRFOIL/2))
-            ax.plot(x, foil.camber_line(x), '--', color='red')
+		print(self.puntoFinal)
+		ax.plot(self.puntoFinal[0], self.puntoFinal[1], color="red")
 
-      if settings.get('chord', False):
-         pass
+		for foil in self.foils:
+			ax.plot(foil._x_upper, foil._y_upper, '-', color='blue')
+			ax.plot(foil._x_lower, foil._y_lower, '-', color='green')
 
-      plt.subplots_adjust(left=0.10, bottom=0.10, right=0.98, top=0.98, wspace=None, hspace=None)
+			if settings.get('points', False):
+				ax.plot(foil.all_points[0, :], foil.all_points[1, :], '.', color='grey')
 
-      if show:
-         plt.show()
+			if settings.get('camber', False):
+				x = np.linspace(0, 1, int(POINTS_AIRFOIL/2))
+				ax.plot(x, foil.camber_line(x), '--', color='red')
 
-      if save:
-         path = settings.get('path', '.')
-         file_name = settings.get('file_name', False)
+		if settings.get('chord', False):
+			pass
 
-         if not file_name:
-            now = datetime.strftime(datetime.now(), format='%F_%H%M%S')
-            file_type = 'png'
-            file_name = f'airfoils_{now}.{file_type}'
+		plt.subplots_adjust(left=0.10, bottom=0.10, right=0.98, top=0.98, wspace=None, hspace=None)
 
-         fig.savefig(os.path.join(path, file_name))
-         return file_name
+		if show:
+			plt.show()
 
-   def exportar(self, separadores=", ", comaDec=False, coordz=True, carpeta=".", sameFile=False, inFileSeparador="\n\n"):
-      """
-         - separadores: que caracter/es utilizar para separar las coordenadas x, y (, z)
-         - comaDec: usar comas como separador decimal en lugar de punto
-         - coordz: añadir la coordenada z
-         - carpeta: donde se exporta
-         - sameFile: exportar el alerón en 1 solo archivo o en varios (para javafoil principalmente)
-         - inFileSeparador: como separar cada elemento del alerón si se exporta en el mismo archivo
-      """
-      result = ""
-      if not os.path.exists(carpeta):
-         os.makedirs(carpeta)
+		if save:
+			path = settings.get('path', '.')
+			file_name = settings.get('file_name', False)
 
-      for foil in self.foils:
-         result += foil.exportar(separador=separadores, comaDec=comaDec, coordz=coordz, toFile= not sameFile, filename= carpeta + "/" + str(foil.meta["name"]) + ".txt")
-         if sameFile:
-            result += inFileSeparador
+			if not file_name:
+				now = datetime.strftime(datetime.now(), format='%F_%H%M%S')
+				file_type = 'png'
+				file_name = f'airfoils_{now}.{file_type}'
 
-      result = result[0: -len(inFileSeparador)] # Quitar el ultimo separador (javafoil)
+			fig.savefig(os.path.join(path, file_name))
+			return file_name
 
-      if sameFile:
-         with open(carpeta + "/" + str(self.meta["name"]) + ".txt", "w") as file:
-            file.write(result)
+	def exportar(self, separadores=", ", comaDec=False, coordz=True, carpeta=".", sameFile=False, inFileSeparador="\n\n"):
+		"""
+			- separadores: que caracter/es utilizar para separar las coordenadas x, y (, z)
+			- comaDec: usar comas como separador decimal en lugar de punto
+			- coordz: añadir la coordenada z
+			- carpeta: donde se exporta
+			- sameFile: exportar el alerón en 1 solo archivo o en varios (para javafoil principalmente)
+			- inFileSeparador: como separar cada elemento del alerón si se exporta en el mismo archivo
+		"""
+		result = ""
+		if not os.path.exists(carpeta):
+			os.makedirs(carpeta)
 
-   def exportarJavaFoil(self, carpeta="."):
-      return self.exportar(separadores="\t", comaDec=True, coordz=False, carpeta=carpeta, sameFile=True, inFileSeparador="9999,9\t9999,9\n")
+		for foil in self.foils:
+			result += foil.exportar(separador=separadores, comaDec=comaDec, coordz=coordz, toFile= not sameFile, filename= carpeta + "/" + str(foil.meta["name"]) + ".txt")
+			if sameFile:
+				result += inFileSeparador
+
+		result = result[0: -len(inFileSeparador)] # Quitar el ultimo separador (javafoil)
+
+		if sameFile:
+			with open(carpeta + "/" + str(self.meta["name"]) + ".txt", "w") as file:
+				file.write(result)
+
+	def exportarJavaFoil(self, carpeta="."):
+		return self.exportar(separadores="\t", comaDec=True, coordz=False, carpeta=carpeta, sameFile=True, inFileSeparador="9999,9\t9999,9\n")

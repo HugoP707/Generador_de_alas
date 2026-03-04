@@ -11,9 +11,9 @@ from Generador_de_alas.mallador.gmsh_helpers import *
 # ---------------------------
 # Archivos de los perfiles colocados
 airfoil_files = [
-	"tests/alaTest1/main.txt",
-	"tests/alaTest1/flap1.txt",
-	"tests/alaTest1/flap2.txt",
+	"tests/alaTest2/main.txt",
+	"tests/alaTest2/flap1.txt",
+	"tests/alaTest2/flap2.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
