@@ -6,14 +6,16 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
+VersionAleron = 9
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
 # Archivos de los perfiles colocados
 airfoil_files = [
-	"tests/alaTest7/main.txt",
-	"tests/alaTest7/flap1.txt",
-	"tests/alaTest7/flap2.txt",
+	f"tests/alaTest{VersionAleron}/main.txt",
+	f"tests/alaTest{VersionAleron}/flap1.txt",
+	f"tests/alaTest{VersionAleron}/flap2.txt",
+	f"tests/alaTest{VersionAleron}/flap3.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
@@ -21,10 +23,11 @@ airfoil_names = [
 	"main",
 	"flap1",
 	"flap2",
+	"flap3",
 ]
 
 # Dirección del archivo de la malla
-output_path = "tests/Su2tests/ala7/"
+output_path = f"tests/Su2tests/ala{VersionAleron}/"
 
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
@@ -40,9 +43,11 @@ all_airfoil_points = [read_profile(file) for file in airfoil_files]
 ##############
 # Elementos tetraédricos o triangulares
 mallaCuadrada = False
+usarSplines = True
 
+# gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = False
+preview_geometria = True
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -103,10 +108,18 @@ airfoils = []
 
 for foil_points, name in zip(all_airfoil_points, airfoil_names):
 	print(len(foil_points))
-	airfoils.append(
-		AirfoilSpline(
-			foil_points, mesh_size_airfoil, name)
-	)
+	if usarSplines:
+		airfoils.append(
+			AirfoilSpline(
+				foil_points, mesh_size_airfoil, name
+			)
+		)
+	else:
+		airfoils.append(
+			AirfoilMultiLine(
+				foil_points, mesh_size_airfoil, name
+			)
+		)
 
 gmsh.model.geo.synchronize()
 
@@ -136,11 +149,14 @@ gmsh.model.geo.synchronize()
 # crear superficie con agujeros = outer_loop + todos los inner loops
 airfoil_curves = []
 for airfoil in airfoils:
-	curv = [
-				airfoil.upper_spline.tag,
-				airfoil.lower_spline.tag,
-				airfoil.closing_line.tag
-			]
+	if usarSplines:
+		curv = [
+					airfoil.upper_spline.tag,
+					airfoil.lower_spline.tag,
+					airfoil.closing_line.tag
+				]
+	else:
+		curv = [line.tag for line in airfoil.lines]
 
 	airfoil_curves += curv
 	# Creates a new mesh field of type 'BoundaryLayer' and assigns it an ID (f).

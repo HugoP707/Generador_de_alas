@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def import_airfoil(filename, eps=1e-9):
+def import_airfoil(filename, eps=1e-12):
 	"""
 	Carga un archivo con coordenadas y genera:
 	- spline del perfil
@@ -22,14 +22,14 @@ def import_airfoil(filename, eps=1e-9):
 			if len(parts) >= 2:
 				x, y = float(parts[0]), float(parts[1])
 				coords.append((x, y, 0))
-	"""
+
 	# Eliminar duplicados consecutivos
 	clean = []
 	for x, y, z in coords:
 		if not clean or abs(clean[-1][0]-x) > eps or abs(clean[-1][1]-y) > eps:
 			clean.append((x, y, z))
-	"""
-	clean = coords
+	# clean = coords
+
 	# Si el primer y último son iguales, eliminar el último
 	# if abs(clean[0][0]-clean[-1][0]) < eps and abs(clean[0][1]-clean[-1][1]) < eps:
 	# 	clean.pop()
@@ -116,8 +116,8 @@ class Line:
 
 		# create the gmsh object and store the tag of the geometric object
 		self.tag = gmsh.model.geo.addLine(
-			self.start_point.tag, self.end_point.tag)
-
+			self.start_point.tag, self.end_point.tag
+		)
 
 class CurveLoop:
 	"""
@@ -577,14 +577,14 @@ class AirfoilMultiLine:
 		self.points = []
 		self.lines = []
 		# Generate Points object from the point_cloud
-		lenPtCloud = len(point_cloud) - 1
+		lenPtCloud = len(point_cloud)
 		for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
 			theta = i/lenPtCloud * 2*np.pi
 			# print(theta)
-			refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.1)
+			# refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.1)
 			# print(refinado_size / mesh_size)
 			self.points.append(
-			Point(point_cord[0], point_cord[1], point_cord[2], refinado_size)
+				Point(point_cord[0], point_cord[1], point_cord[2], mesh_size)
 			)
 
 
@@ -630,8 +630,12 @@ class AirfoilMultiLine:
 		# create a spline from the up middle point to the trailing edge (up part)
 		for i in range(len(self.points)-1):
 			self.lines.append(
-				gmsh.model.geo.addLine(self.points[i].tag, self.points[i+1].tag)
+				Line(self.points[i], self.points[i+1])
 			)
+
+		self.lines.append(
+								Line(self.points[-1], self.points[0])
+							)
 		print(self.lines)
 		with open("testing.txt", "w") as file:
 			for point in self.points:
@@ -654,18 +658,8 @@ class AirfoilMultiLine:
 		Method that define the marker of the airfoil for the boundary condition
 		-------
 		"""
-		print("Line tags: ")
-		print([
-			self.upper_spline.tag,
-			self.lower_spline.tag,
-			self.closing_line.tag
-		])
-
 		self.bc = gmsh.model.addPhysicalGroup(
-			self.dim, [self.upper_spline.tag,
-							self.lower_spline.tag,
-							self.closing_line.tag
-						]
+			self.dim, [line.tag for line in self.lines]
 		)
 		gmsh.model.setPhysicalName(self.dim, self.bc, self.name)
 
