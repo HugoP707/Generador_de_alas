@@ -72,6 +72,9 @@ print([AOA0, AOA1, AOA2])
 
 # Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
 GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.12]), gaps_normalizados(C2, AOA1, [-0.22, 0.2])]
+
+print("Huecos entre perfiles: ")
+print(GAPS)
 # Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
 #GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
 # Valores absolutos y en los ejes de coordenadas normales
@@ -106,7 +109,7 @@ ala = Alerón([main, flap1, flap2], GAPS, {"name": "RW"})
 ## La primera la convierte en longitud 1 y la pone con Ángulo de ataque 0
 ## La segunda vuelve a colocar el alerón con el ángulo de ataque que tenía
 ala.normalizarAleron()
-# ala.rotar(ala.AOATotal)
+# ala.rotar(-ala.AOATotal)
 
 print("Cuerda del alerón: " + str(ala.cuerdaTotal))
 print("AOA del alerón: " + str(ala.AOATotal))

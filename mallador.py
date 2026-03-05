@@ -11,9 +11,9 @@ from Generador_de_alas.mallador.gmsh_helpers import *
 # ---------------------------
 # Archivos de los perfiles colocados
 airfoil_files = [
-	"tests/alaTest1/main.txt",
-	"tests/alaTest1/flap1.txt",
-	"tests/alaTest1/flap2.txt",
+	"tests/alaTest7/main.txt",
+	"tests/alaTest7/flap1.txt",
+	"tests/alaTest7/flap2.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
@@ -24,11 +24,12 @@ airfoil_names = [
 ]
 
 # Dirección del archivo de la malla
-output_path = "tests/Su2tests/ala2_alaTest1/"
+output_path = "tests/Su2tests/ala7/"
+
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
 output_su2 = output_path + "airfoil_simple.su2"
-output_cgns = "airfoil_simple.cgns"
+output_cgns = "airfoil_25D_fluentTest.cgns"
 output_openfoam = "airfoil_openfoam.msh"
 output_file = output_su2
 
@@ -37,6 +38,7 @@ all_airfoil_points = [read_profile(file) for file in airfoil_files]
 ##############
 ## SETTINGS ##
 ##############
+# Elementos tetraédricos o triangulares
 mallaCuadrada = False
 
 # Más que nada para revisar cosas, no hace falta si no te da errores
@@ -292,9 +294,8 @@ else:
 
 # Generar malla
 gmsh.model.mesh.generate(1)
-if not export_openfoam_3D:
-	gmsh.model.mesh.generate(2)
-else:
+gmsh.model.mesh.generate(2)
+if export_openfoam_3D:
 	gmsh.model.mesh.generate(3)
 
 gmsh.model.mesh.optimize("Netgen")
