@@ -47,7 +47,7 @@ usarSplines = True
 
 # gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = True
+preview_geometria = False
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -163,8 +163,8 @@ for airfoil in airfoils:
 	f = gmsh.model.mesh.field.add('BoundaryLayer')
 
 	gmsh.model.mesh.field.setNumbers(
-			f, "FanPointsList", [airfoil.le.tag] + [airfoil.te.tag])
-								# airfoil.le.tag + i for i in range(-2, 2)
+		f, "FanPointsList", [airfoil.te.tag] + [airfoil.points[-1].tag]
+	)					# [airfoil.le.tag] +
 
 	gmsh.option.setNumber("Mesh.BoundaryLayerFanElements", 20)
 	# Add the curves where we apply the boundary layer (around the airfoil for us)
@@ -242,10 +242,10 @@ for airfoil in airfoils:
 	balls.append(ball2)
 
 bolaEstela = gmsh.model.mesh.field.add("Ball")
-gmsh.model.mesh.field.setNumber(bolaEstela, "XCenter", airfoils[-1].te.x + 0.5)
-gmsh.model.mesh.field.setNumber(bolaEstela, "YCenter", airfoils[-1].te.y)
-gmsh.model.mesh.field.setNumber(bolaEstela, "ZCenter", airfoils[-1].te.z)
-gmsh.model.mesh.field.setNumber(bolaEstela, "Radius", 0.5)   # radio de influencia
+gmsh.model.mesh.field.setNumber(bolaEstela, "XCenter", airfoils[-2].te.x + 0.5)
+gmsh.model.mesh.field.setNumber(bolaEstela, "YCenter", airfoils[-2].te.y)
+gmsh.model.mesh.field.setNumber(bolaEstela, "ZCenter", airfoils[-2].te.z)
+gmsh.model.mesh.field.setNumber(bolaEstela, "Radius", 0.75)   # radio de influencia
 # TODO: Hacer un parámetro
 gmsh.model.mesh.field.setNumber(bolaEstela, "VIn", mesh_size_close * 10)    # tamaño mínimo dentro
 

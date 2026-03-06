@@ -439,12 +439,12 @@ class Airfoil:
 		#print(len(self._y_upper))
 		### Back to front arriba y luego
 		### front to back abajo
-		for i in reversed(range(0, len(self._x_upper))):
+		for i in range(0, len(self._x_upper)):
 			result += str(self._x_upper[i]) + separador + str(self._y_upper[i])
 			if coordz:
 				result += separador + "0.0000"
 			result += "\n"
-		for i in range(0, len(self._x_lower)):
+		for i in reversed(range(0, len(self._x_lower))):
 			result += str(self._x_lower[i]) + separador + str(self._y_lower[i])
 			if coordz:
 				result += separador + "0.0000"

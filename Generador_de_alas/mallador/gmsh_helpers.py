@@ -3,7 +3,7 @@ import math
 import numpy as np
 
 
-def import_airfoil(filename, eps=1e-12):
+def import_airfoil(filename, eps=1e-9):
 	"""
 	Carga un archivo con coordenadas y genera:
 	- spline del perfil
@@ -23,13 +23,15 @@ def import_airfoil(filename, eps=1e-12):
 				x, y = float(parts[0]), float(parts[1])
 				coords.append((x, y, 0))
 
+	print("Nº puntos original: ", len(coords))
 	# Eliminar duplicados consecutivos
 	clean = []
 	for x, y, z in coords:
 		if not clean or abs(clean[-1][0]-x) > eps or abs(clean[-1][1]-y) > eps:
 			clean.append((x, y, z))
-	# clean = coords
 
+	print("Nº puntos limpios: ", len(clean))
+	# clean = coords
 	# Si el primer y último son iguales, eliminar el último
 	# if abs(clean[0][0]-clean[-1][0]) < eps and abs(clean[0][1]-clean[-1][1]) < eps:
 	# 	clean.pop()
@@ -450,7 +452,7 @@ class AirfoilSpline:
 		self.mesh_size = mesh_size
 		self.points = []
 		# Generate Points object from the point_cloud
-		lenPtCloud = len(point_cloud) - 1
+		lenPtCloud = len(point_cloud)
 		for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
 			theta = i/lenPtCloud * 2*np.pi
 			# print(theta)
@@ -460,22 +462,21 @@ class AirfoilSpline:
 				Point(point_cord[0], point_cord[1], point_cord[2], mesh_size)
 			)
 
-		print(self.points)
+		# print(self.points)
 		# Find leading and trailing edge location
 		# in points array
 		self.te_idx = 0									# max(self.points, key=attrgetter("x"))
-		self.le_idx = (len(self.points) - 1) // 2		# min(self.points, key=attrgetter("x"))
+		self.le_idx = (len(self.points)) // 2		# min(self.points, key=attrgetter("x"))
 
 		self.te = self.points[self.te_idx]
 		self.le = self.points[self.le_idx]
-		print("Total points: " + str(len(self.points)))
+		print("Total points: ", len(self.points), "(", len(point_cloud), ")")
 		print("Leading edge index: " + str(self.le_idx))
 
-		print(len(point_cloud))
 		print("Margins: ")
-		print(self.te_idx, ":", self.le_idx+1)
-		print(self.le_idx, ":", len(self.points)+1)
-		print(len(self.points[self.te_idx:self.le_idx+1]) + len(self.points[self.le_idx:len(self.points)+1]))
+		print(self.te_idx, ":", self.le_idx)
+		print(self.le_idx, ":", len(self.points))
+		print(len(self.points[self.te_idx:self.le_idx]) + len(self.points[self.le_idx:len(self.points)+1]))
 
 	# Función para refinar los bordes de ataque y salida, (ultimos puntos y los del medio)
 	def refinar_bordes(self, size, theta, ratioref=0.25):
@@ -499,10 +500,12 @@ class AirfoilSpline:
 		of the airfoil are in their final position
 		-------
 		"""
+
 		# Find the first point after 0.049 in the upper band lower spline
 		# create a spline from the up middle point to the trailing edge (up part)
 		self.upper_spline = Spline(
-			self.points[: self.le_idx + 1])
+			self.points[:self.le_idx+1]
+		)
 
 		# create a spline from the trailing edge to the up down point (down part)
 		self.lower_spline = Spline(
@@ -512,6 +515,7 @@ class AirfoilSpline:
 		self.closing_line = Line(
 			self.points[-1], self.points[0]
 		)
+
 		with open("testing.txt", "w") as file:
 			for point in self.points:
 				file.write("{0},{1},{2}\n".format(point.x,point.y,point.z))
@@ -577,7 +581,7 @@ class AirfoilMultiLine:
 		self.points = []
 		self.lines = []
 		# Generate Points object from the point_cloud
-		lenPtCloud = len(point_cloud)
+		lenPtCloud = len(point_cloud) - 1
 		for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
 			theta = i/lenPtCloud * 2*np.pi
 			# print(theta)
@@ -600,9 +604,9 @@ class AirfoilMultiLine:
 
 		print(len(point_cloud))
 		print("Margins: ")
-		print(self.te_idx, ":", self.le_idx+1)
+		print(self.te_idx, ":", self.le_idx)
 		print(self.le_idx, ":", len(self.points)+1)
-		print(len(self.points[self.te_idx:self.le_idx+1]) + len(self.points[self.le_idx:len(self.points)+1]))
+		print(len(self.points[self.te_idx:self.le_idx]) + len(self.points[self.le_idx:len(self.points)+1]))
 
 	# Función para refinar los bordes de ataque y salida, (ultimos puntos y los del medio)
 	def refinar_bordes(self, size, theta, ratioref=0.25):
@@ -634,8 +638,8 @@ class AirfoilMultiLine:
 			)
 
 		self.lines.append(
-								Line(self.points[-1], self.points[0])
-							)
+			Line(self.points[-1], self.points[0])
+		)
 		print(self.lines)
 		with open("testing.txt", "w") as file:
 			for point in self.points:
