@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = 9
+VersionAleron = 11
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -57,7 +57,7 @@ of_layers = 1
 ###########################################################
 ### SETTINGS DEL FARFIELD ###
 ###########################################################
-use_circle_farfield = False 	# True -> círculo, False -> caja
+use_circle_farfield = True 	# True -> círculo, False -> caja
 farfield_radius = 6				# radio del dominio exterior (si usas círculo)
 circlex_offset = 2				# adelantar el perfil dentro del circulo
 
