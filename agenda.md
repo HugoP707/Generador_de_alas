@@ -18,3 +18,16 @@ objetivos de cp mayores ~~(-4, -3 y -2) ~> (2'2, 2, 1'9).
 
 - Obersvación: no reduzco más el primer hueco por miedo a que el flujo venga mal al meterme
 en exceso en la curvatura del primer elemento.
+
+### Resultados 9 -> 10, 11
+- La mayor curvatura no ayudó.
+- El último elemento más agresivo aparentemente era mejor.
+
+### Cambios de 10, 11 a 12:
+- Menos curvatura primer elemento.
+- Angulo de ataque de segundo elemento menos agresivo
+- ~~Mismo~~ último elemento, que 11
+- A priori ultimo elemento menos convencional.
+
+### Version 12A(gresiva):
+- Solapamiento agresivo del ultimo elemento.

@@ -9,29 +9,19 @@ from Generador_de_alas.alas.aleron import *
 naca642320U, naca642320L = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 naca64AU, naca64AL = import_airfoil_data("datos_perfiles/javafoilNACA64-2320a0.dat")
 nasaSC21006U, nasaSC21006L = import_airfoil_data("datos_perfiles/NASA SC(2)-1006 AIRFOIL modified2_4 modified modified_closed_te.dat")
-naca16_3_014U, naca16_3_014L = import_airfoil_data("datos_perfiles/naca 16-3014.dat")
-
-jkk145145U, jkkL145145L = import_airfoil_data("datos_perfiles/joukovsky145145.dat")
-
 Fx74U, Fx74L = import_airfoil_data("datos_perfiles/FX74.dat")
 s1223U, s1223L = import_airfoil_data("datos_perfiles/s1223.dat")
 s1223RTLU, s1223RTLL = import_airfoil_data("datos_perfiles/S1223 RTL.dat")
 e423U, e423L = import_airfoil_data("datos_perfiles/e423.dat")
 
-naca1313U, naca1313L = import_airfoil_data("datos_perfiles/nacasxx_en50_13_en20/13.dat")
-naca1314U, naca1314L = import_airfoil_data("datos_perfiles/nacasxx_en50_13_en20/14.dat")
-naca1315U, naca1315L = import_airfoil_data("datos_perfiles/nacasxx_en50_13_en20/15.dat")
-naca1316U, naca1316L = import_airfoil_data("datos_perfiles/nacasxx_en50_13_en20/16.dat")
-naca1317U, naca1317L = import_airfoil_data("datos_perfiles/nacasxx_en50_13_en20/17.dat")
 
 ##############################
 # Elegir los perfiles a usar:
 ##############################
-# elem0U, elem0L = None
-elem1U, elem1L = naca1317U, naca1317L
-elem2U, elem2L = naca1317U, naca1317L
-elem3U, elem3L = naca1317U, naca1317L
-elem4U, elem4L = naca1317U, naca1317L
+elem1U, elem1L = Fx74U, Fx74L
+elem2U, elem2L = s1223U, s1223L
+elem3U, elem3L = e423U, e423L
+elem4U, elem4L = e423U, e423L
 
 ###############################################################################################
 # Por defecto los perfiles los exporta con 120 puntos, independientemente de de los que entren
@@ -56,22 +46,21 @@ elem4U, elem4L = naca1317U, naca1317L
 # ignorad la forma "rara" que he usado
 # y poned numeros concretos si preferís
 ########################################
-C0 = None
-C1 = 1
-C2 = C1*2/3
-C3 = C2*2/3
-C4 = C3*2/3
+C0 = 0.78
+C1 = C0*0.45
+C2 = C1*0.5
+C3 = C0*0.5
 
 print("Cuerdas: ")
-print([C0, C1, C2])
+print([C0, C1, C2, C3])
 
-AOA1 = 0
-AOA2 = AOA1 + 30
-AOA3 = AOA2 + 25
-AOA4 = AOA3 + 0
+AOA0 = 0
+AOA1 = AOA0 + 30
+AOA2 = AOA1 + 27
+AOA3 = 8
 
 print("Ángulos de ataque: ")
-print([AOA1, AOA2, AOA3, AOA4])
+print([AOA0, AOA1, AOA2, AOA3])
 
 
 # Si prefieres usar las coordenadas absolutas puedes hacerlo como:
@@ -82,14 +71,7 @@ print([AOA1, AOA2, AOA3, AOA4])
 # encima de la función os pondrá la documentación, sino podeís leerla en Generador_de_Alas/alas/aleron.py
 
 # Valores relativos y en ejes de corrdenadas orientados con el perfil anterior
-GAPS = [
-			gaps_normalizados(C2, AOA1, [-0.55, 0.075]),
-			gaps_normalizados(C3, AOA2, [-0.55, 0.075]),
-			gaps_normalizados(C4, AOA3, [-0.75, 0.25])
-		]
-
-print("Huecos entre perfiles: ")
-print(GAPS)
+GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.12]), gaps_normalizados(C2, AOA1, [-0.22, 0.2])]
 # Valores absolutos y en ejes de corrdenadas orientados con el perfil anterio
 #GAPS = [gaps_normalizados(C1, AOA0, [-0.2, 0.05], relativos=False), gaps_normalizados(C2, AOA1, [-0.2, 0.05], relativos=False)]
 # Valores absolutos y en los ejes de coordenadas normales
@@ -102,34 +84,37 @@ print(GAPS)
 
 main = Airfoil(elem1U, elem1L, {"name": "main"})
 main.flip()
-main.escalar(C1)
-main.setAOA(AOA1)
+main.escalar(C0)
+main.setAOA(AOA0)
 
 flap1 = Airfoil(elem2U, elem2L, {"name": "flap1"})
 flap1.flip()
-flap1.escalar(C2)
-flap1.setAOA(AOA2)
+flap1.escalar(C1)
+flap1.setAOA(AOA1)
 
 flap2 = Airfoil(elem3U, elem3L, {"name": "flap2"})
 flap2.flip()
-flap2.escalar(C3)
-flap2.setAOA(AOA3)
+flap2.escalar(C2)
+flap2.setAOA(AOA2)
 
 flap3 = Airfoil(elem4U, elem4L, {"name": "flap3"})
-flap3.flip()
-flap3.escalar(C4)
-flap3.setAOA(AOA4)
+# flap3.flip()
+flap3.escalar(C3)
+flap3.setAOA(-AOA3)
+flap3.translate(-C3*0.66, C3*0.66)
+flap3.plot()
+flap3.exportar(separador="\t", comaDec=False, coordz=False, toFile=True, filename="tests/alaTestBiplanoInv/flap3.txt")#, sameFile=False, inFileSeparador="\n\n")
 
 # TODO: CUIDADO CON setAOA y rotar,
 # no fiarse de setAOA, si vas a añadir otro perfil mejor usa rotar !!!!
-ala = Alerón([main, flap1, flap2, flap3], GAPS, {"name": "RW"})
+ala = Alerón([main, flap1, flap2], GAPS, {"name": "RW"})
 #                                           ^^^^^^^^^ Esto no se usa por ahora, no hace falta cambiarlo
 
 ## Estas líneas serían para normalizar el ala (hacerla de longitud unitaria)
 ## La primera la convierte en longitud 1 y la pone con Ángulo de ataque 0
 ## La segunda vuelve a colocar el alerón con el ángulo de ataque que tenía
 ala.normalizarAleron()
-# ala.rotar(-ala.AOATotal)
+# ala.rotar(ala.AOATotal)
 
 print("Cuerda del alerón: " + str(ala.cuerdaTotal))
 print("AOA del alerón: " + str(ala.AOATotal))
@@ -137,6 +122,6 @@ for foil in ala.foils:
 	print(foil.max_extrados())
 
 ala.plot()
-ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTest11", sameFile=False, inFileSeparador="\n\n")
+ala.exportar(separadores="\t", comaDec=False, coordz=False, carpeta="tests/alaTestBiplanoInv", sameFile=False, inFileSeparador="\n\n")
 # En Javafoil se ponen todos en un archivo y separados por una fila con 9999,9	9999,9
 # ala.exportarJavaFoil("tests/JavaFoilTests/2/")

@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = 11
+VersionAleron = "12A"
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -34,6 +34,7 @@ output_msh = "airfoil_simple.msh"
 output_su2 = output_path + "airfoil_simple.su2"
 output_cgns = "airfoil_25D_fluentTest.cgns"
 output_openfoam = "airfoil_openfoam.msh"
+output_geom = "geom.step"
 output_file = output_su2
 
 all_airfoil_points = [read_profile(file) for file in airfoil_files]
@@ -47,7 +48,7 @@ usarSplines = True
 
 # gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = False
+preview_geometria = True
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -57,7 +58,7 @@ of_layers = 1
 ###########################################################
 ### SETTINGS DEL FARFIELD ###
 ###########################################################
-use_circle_farfield = True 	# True -> círculo, False -> caja
+use_circle_farfield = False 	# True -> círculo, False -> caja
 farfield_radius = 6				# radio del dominio exterior (si usas círculo)
 circlex_offset = 2				# adelantar el perfil dentro del circulo
 
@@ -68,7 +69,7 @@ tunnelx_offset = 3			#adelantar el perfil dentro de la caja
 ###########################################################
 ## SETTINGS CAPA LÍMITE
 ###########################################################
-first_layer_height = 1.1e-5   # altura primera capa BL
+first_layer_height = 1.1e-5*2   # altura primera capa BL
 bl_ratio = 1.2
 espesor_bl = 4.5e-3             # Espesor total
 
@@ -121,29 +122,32 @@ for foil_points, name in zip(all_airfoil_points, airfoil_names):
 			)
 		)
 
-gmsh.model.geo.synchronize()
+gmsh.model.occ.synchronize()
 
-# gmsh.fltk.run()
 
 for airfoil in airfoils:
 	airfoil.gen_skin()
 
+if preview_geometria:
+	gmsh.model.occ.synchronize()
+	gmsh.fltk.run()
+
 # crear farfield
 if use_circle_farfield:
-	#ext_domain = gmsh.model.geo.addCircle(0, 0, 0, farfield_radius)
+	#ext_domain = gmsh.model.occ.addCircle(0, 0, 0, farfield_radius)
 	ext_domain = Circle(0+circlex_offset, 0, 0, radius=farfield_radius,
 								mesh_size=farfield_mesh_size)
 else:
 	ext_domain = Rectangle(0+tunnelx_offset, 0, 0, tunnel_length, tunnel_height,
 									mesh_size=farfield_mesh_size)
 
-gmsh.model.geo.synchronize()
+gmsh.model.occ.synchronize()
 surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_geometria)
 
 if mallaCuadrada:
-	gmsh.model.geo.mesh.setRecombine(2, surface.tag)
+	gmsh.model.occ.mesh.setRecombine(2, surface.tag)
 
-gmsh.model.geo.synchronize()
+gmsh.model.occ.synchronize()
 
 
 # crear superficie con agujeros = outer_loop + todos los inner loops
@@ -189,7 +193,7 @@ surface.define_bc()
 for airfoil in airfoils:
 	airfoil.define_bc()
 
-gmsh.model.geo.synchronize()
+gmsh.model.occ.synchronize()
 
 # Say we would like to obtain mesh elements with size lc/30 near curve 2 and
 # point 5, and size lc elsewhere. To achieve this, we can use two fields:
@@ -255,7 +259,7 @@ combined = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(combined, "FieldsList", [zonaRefinamiento] + balls)
 gmsh.model.mesh.field.setAsBackgroundMesh(combined)
 
-gmsh.model.geo.synchronize()
+gmsh.model.occ.synchronize()
 
 
 # gmsh.option.setNumber("Mesh.SaveAll", 0)
@@ -278,18 +282,18 @@ gmsh.option.setNumber("Mesh.CharacteristicLengthExtendFromBoundary", 0)
 # -----------------------------
 # GENERACIÓN MALLA
 # -----------------------------
-gmsh.model.geo.synchronize()
+gmsh.model.occ.synchronize()
 
 if export_openfoam_3D:
 	# Extruir superficie fluida
-	ext = gmsh.model.geo.extrude(
+	ext = gmsh.model.occ.extrude(
 		[(2, surface.tag)],
 		0, 0, of_thickness,
 		[of_layers],
 		recombine=True
 	)
 
-	gmsh.model.geo.synchronize()
+	gmsh.model.occ.synchronize()
 
 	volume_tag = ext[1][1]   # volumen creado
 
@@ -306,7 +310,7 @@ if export_openfoam_3D:
 else:
 	gmsh.model.addPhysicalGroup(2, [surface.tag], name="fluido")
 
-	gmsh.model.geo.synchronize()
+	gmsh.model.occ.synchronize()
 
 # Generar malla
 gmsh.model.mesh.generate(1)
