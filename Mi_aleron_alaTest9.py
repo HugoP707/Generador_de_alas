@@ -63,7 +63,7 @@ C3 = C2*2/3
 C4 = C3*2/3
 
 print("Cuerdas: ")
-print([C0, C1, C2])
+print([C1, C2, C3, C4])
 
 AOA1 = 0
 AOA2 = AOA1 + 25

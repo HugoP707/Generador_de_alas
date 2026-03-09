@@ -7752,7 +7752,7 @@
         <Domain name="bool" id="13658.SelectionVisibility.bool"/>
       </Property>
       <Property name="Visibility" id="13658.Visibility" number_of_elements="1">
-        <Element index="0" value="0"/>
+        <Element index="0" value="1"/>
         <Domain name="bool" id="13658.Visibility.bool"/>
       </Property>
       <Property name="Ambient" id="13658.Ambient" number_of_elements="1">
@@ -15138,7 +15138,7 @@
         <Element index="0" value="{:&#x3c;#6.1e}"/>
       </Property>
       <Property name="DataRangeMax" id="13972.DataRangeMax" number_of_elements="1">
-        <Element index="0" value="2.2183959034836973"/>
+        <Element index="0" value="2.1534737382588283"/>
       </Property>
       <Property name="DataRangeMin" id="13972.DataRangeMin" number_of_elements="1">
         <Element index="0" value="0"/>
@@ -15846,11 +15846,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLUnstructuredGridReader" id="13273" servers="1">
       <Property name="FileName" id="13273.FileName" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala9/flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/flow.vtu"/>
         <Domain name="files" id="13273.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="13273.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala9/flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/flow.vtu"/>
       </Property>
       <Property name="TimestepValues" id="13273.TimestepValues"/>
       <Property name="CellArrayInfo" id="13273.CellArrayInfo"/>
@@ -15944,11 +15944,11 @@
     </Proxy>
     <Proxy group="sources" type="CSVReader" id="14032" servers="1">
       <Property name="FileName" id="14032.FileName" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala9/history.csv"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/history.csv"/>
         <Domain name="files" id="14032.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="14032.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala9/history.csv"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/history.csv"/>
       </Property>
       <Property name="TimestepValues" id="14032.TimestepValues"/>
       <Property name="AddTabFieldDelimiter" id="14032.AddTabFieldDelimiter" number_of_elements="1">
@@ -15974,7 +15974,7 @@
         <Domain name="bool" id="14032.MergeConsecutiveDelimiters.bool"/>
       </Property>
       <Property name="Preview" id="14032.Preview" number_of_elements="1">
-        <Element index="0" value="&#x22;Inner_Iter&#x22;,    &#x22;Time(sec)&#x22;   ,     &#x22;rms[P]&#x22;     ,     &#x22;rms[U]&#x22;     ,     &#x22;rms[V]&#x22;     ,       &#x22;CD&#x22;       ,       &#x22;CL&#x22;       &#xd;&#xa;           0,             1.453,      -4.200471639,      -17.54846937,      -18.41480419,       5.576535556,      -2.826984491&#xd;&#xa;           1,             1.458,      -4.390737854,      -4.034676335,      -4.304801141,       7.698970347,      -4.159571953&#xd;&#xa;           2,             1.468,      -4.623332023,      -4.284152329,      -4.446988921,       5.926855179,      -3.268089251&#xd;&#xa;           3,             1.467,      -4.763456629,      -4.594476878,      -4.695682158,       4.873474858,      -2.728238298&#xd;&#xa;           4,            1.4654,      -5.008533025,      -4.616779425,      -4.707531181,       4.908664924,      -2.790908573&#xd;&#xa;           5,             1.461,      -5.051480832,       -4.66300159,      -4.740237548,       5.233253144,      -3.016433552&#xd;&#xa;           6,       1.461428571,      -5.082226696,      -4.632757263,      -4.710469231,       5.464537312,      -3.175577061&#xd;&#xa;           7,             1.457,      -5.087067952,      -4.592230872,      -4.668998703,       5.534775958,      -3.203282186&#xd;&#xa;           8,       1.453888889,       -5.06843221,      -4.535425835,        -4.6172033,       5.519096641,       -3.16614375&#xd;&#xa;"/>
+        <Element index="0" value="&#x22;Inner_Iter&#x22;,    &#x22;Time(sec)&#x22;   ,     &#x22;rms[P]&#x22;     ,     &#x22;rms[U]&#x22;     ,     &#x22;rms[V]&#x22;     ,       &#x22;CD&#x22;       ,       &#x22;CL&#x22;       &#xd;&#xa;           0,             1.675,      -4.167592118,      -17.52860022,       -18.3924163,       8.001590559,      -3.989482181&#xd;&#xa;           1,            1.6045,      -4.444539751,      -4.009337088,      -4.221838575,       8.784780038,      -4.553634748&#xd;&#xa;           2,       1.558666667,      -4.619363413,      -4.331596491,      -4.494445562,        6.71286362,      -3.533138617&#xd;&#xa;           3,           1.55225,      -4.770890904,      -4.546705706,      -4.650426892,       5.384573166,      -2.892514335&#xd;&#xa;           4,            1.5512,      -5.017872893,      -4.566443357,      -4.657288716,        5.15720217,      -2.814106812&#xd;&#xa;           5,       1.554666667,      -5.048833296,      -4.610657156,      -4.684517204,       5.194362347,      -2.836881764&#xd;&#xa;           6,       1.553142857,      -5.061976595,      -4.585526966,      -4.665706781,       5.154312471,      -2.743567495&#xd;&#xa;           7,          1.556875,      -5.055840127,      -4.534631839,      -4.630498552,       5.050819854,       -2.51760734&#xd;&#xa;           8,       1.551555556,      -5.039585682,      -4.466016892,      -4.567275682,       4.986473658,      -2.337849517&#xd;&#xa;"/>
       </Property>
       <Property name="SkippedLines" id="14032.SkippedLines" number_of_elements="1">
         <Element index="0" value="0"/>
@@ -15987,11 +15987,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLUnstructuredGridReader" id="13689" servers="1">
       <Property name="FileName" id="13689.FileName" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala9/surface_flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/surface_flow.vtu"/>
         <Domain name="files" id="13689.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="13689.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala9/surface_flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/surface_flow.vtu"/>
       </Property>
       <Property name="TimestepValues" id="13689.TimestepValues"/>
       <Property name="CellArrayInfo" id="13689.CellArrayInfo"/>
@@ -16773,10 +16773,10 @@
         <Domain name="bool" id="14099.LeftAxisLogScale.bool"/>
       </Property>
       <Property name="LeftAxisRangeMaximum" id="14099.LeftAxisRangeMaximum" number_of_elements="1">
-        <Element index="0" value="8"/>
+        <Element index="0" value="4"/>
       </Property>
       <Property name="LeftAxisRangeMinimum" id="14099.LeftAxisRangeMinimum" number_of_elements="1">
-        <Element index="0" value="-20"/>
+        <Element index="0" value="-16"/>
       </Property>
       <Property name="LeftAxisTitle" id="14099.LeftAxisTitle" number_of_elements="1">
         <Element index="0" value=""/>
@@ -16815,7 +16815,7 @@
         <Domain name="bool" id="14099.LeftAxisUseCustomLabels.bool"/>
       </Property>
       <Property name="LeftAxisUseCustomRange" id="14099.LeftAxisUseCustomRange" number_of_elements="1">
-        <Element index="0" value="0"/>
+        <Element index="0" value="1"/>
         <Domain name="bool" id="14099.LeftAxisUseCustomRange.bool"/>
       </Property>
       <Property name="LegendBold" id="14099.LegendBold" number_of_elements="1">
@@ -18431,10 +18431,10 @@
         <Element index="2" value="0"/>
       </Property>
       <Property name="CameraParallelScale" id="14030.CameraParallelScale" number_of_elements="1">
-        <Element index="0" value="3.5987235474513963"/>
+        <Element index="0" value="1.368416680819816"/>
       </Property>
       <Property name="CameraParallelScaleInfo" id="14030.CameraParallelScaleInfo" number_of_elements="1">
-        <Element index="0" value="3.5987235474513963"/>
+        <Element index="0" value="1.368416680819816"/>
       </Property>
       <Property name="CameraPosition" id="14030.CameraPosition" number_of_elements="3">
         <Element index="0" value="0.5440240132783957"/>
@@ -18724,8 +18724,8 @@
           <Property source_property="SelectionColor" target_id="14087" target_property="Color" unlink_if_modified="1"/>
           <Property source_property="TextAnnotationColor" target_id="14027" target_property="LabelColor" unlink_if_modified="1"/>
           <Property source_property="TextAnnotationColor" target_id="14027" target_property="TitleColor" unlink_if_modified="1"/>
-          <Property source_property="ForegroundColor" target_id="17447" target_property="ForegroundWidgetColor" unlink_if_modified="1"/>
-          <Property source_property="InteractiveWidgetColor" target_id="17447" target_property="InteractiveWidgetColor" unlink_if_modified="1"/>
+          <Property source_property="ForegroundColor" target_id="17408" target_property="ForegroundWidgetColor" unlink_if_modified="1"/>
+          <Property source_property="InteractiveWidgetColor" target_id="17408" target_property="InteractiveWidgetColor" unlink_if_modified="1"/>
         </Links>
       </SettingsProxy>
       <SettingsProxy group="settings" type="GeneralSettings">
