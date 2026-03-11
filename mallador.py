@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = "12A"
+VersionAleron = "12"
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -37,7 +37,6 @@ output_openfoam = "airfoil_openfoam.msh"
 output_geom = "geom.step"
 output_file = output_su2
 
-all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
 ##############
 ## SETTINGS ##
@@ -48,7 +47,8 @@ usarSplines = True
 
 # gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = True
+preview_geometria = False
+preview_volumen = True
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -69,7 +69,7 @@ tunnelx_offset = 3			#adelantar el perfil dentro de la caja
 ###########################################################
 ## SETTINGS CAPA LÍMITE
 ###########################################################
-first_layer_height = 1.1e-5*2   # altura primera capa BL
+first_layer_height = 1.1e-5   # altura primera capa BL
 bl_ratio = 1.2
 espesor_bl = 4.5e-3             # Espesor total
 
@@ -104,8 +104,11 @@ mesh_size_estela = 0.1
 # Inicializar gmsh.geo
 # ---------------------------
 gmsh.initialize()
+gmsh.option.set_string("Geometry.OCCTargetUnit", "M")
+
 
 airfoils = []
+all_airfoil_points = [read_profile(file) for file in airfoil_files]
 
 for foil_points, name in zip(all_airfoil_points, airfoil_names):
 	print(len(foil_points))
@@ -142,7 +145,7 @@ else:
 									mesh_size=farfield_mesh_size)
 
 gmsh.model.occ.synchronize()
-surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_geometria)
+surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_volumen)
 
 if mallaCuadrada:
 	gmsh.model.occ.mesh.setRecombine(2, surface.tag)

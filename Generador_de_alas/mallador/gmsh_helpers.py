@@ -463,7 +463,7 @@ class AirfoilSpline:
 			refinado_size = self.refinar_bordes(mesh_size, theta, ratioref=0.1)
 			# print(refinado_size / mesh_size)
 			self.points.append(
-				Point(point_cord[0], point_cord[1], point_cord[2], mesh_size)
+				Point(point_cord[0], point_cord[1], point_cord[2], refinado_size)
 			)
 
 		# print(self.points)
