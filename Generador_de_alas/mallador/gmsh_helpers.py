@@ -36,9 +36,9 @@ def import_airfoil(filename, eps=1e-9):
 	print("Nº puntos limpios: ", len(clean))
 	# clean = coords
 	# Si el primer y último son iguales, eliminar el último
-	if abs(clean[0][0]-clean[-1][0]) < eps and abs(clean[0][1]-clean[-1][1]) < eps:
-		clean.pop(0)
-		clean.pop()
+	# if abs(clean[0][0]-clean[-1][0]) < eps and abs(clean[0][1]-clean[-1][1]) < eps:
+	# 	clean.pop(0)
+	# 	clean.pop()
 
 	return clean
 
@@ -457,6 +457,15 @@ class AirfoilSpline:
 		self.points = []
 		# Generate Points object from the point_cloud
 		lenPtCloud = len(point_cloud)
+		eps = 1e-9
+		self.cerrado = None
+		if abs(point_cloud[0][0]-point_cloud[-1][0]) < eps and abs(point_cloud[0][1]-point_cloud[-1][1]) < eps:
+			# point_cloud.pop(0)
+			point_cloud.pop()
+			self.cerrado = True
+		else:
+			self.cerrado = False
+
 		for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
 			theta = i/lenPtCloud * 2*np.pi
 			# print(theta)
@@ -474,6 +483,7 @@ class AirfoilSpline:
 
 		self.te = self.points[self.te_idx]
 		self.le = self.points[self.le_idx]
+		print("Cerrado: ", self.cerrado)
 		print("Total points: ", len(self.points), "(", len(point_cloud), ")")
 		print("Leading edge index: " + str(self.le_idx))
 
@@ -513,14 +523,24 @@ class AirfoilSpline:
 			self.points[:self.le_idx+1 + extra]
 		)
 
-		# create a spline from the trailing edge to the up down point (down part)
-		self.lower_spline = Spline(
-			self.points[self.le_idx + extra:]
-		)
+		if not self.cerrado:
+			# create a spline from the trailing edge to the up down point (down part)
+			self.lower_spline = Spline(
+				self.points[self.le_idx + extra:]
+			)
 
-		self.closing_line = Line(
-			self.points[-1], self.points[0]
-		)
+			self.closing_line = Line(
+				self.points[-1], self.points[0]
+			)
+		else:
+			# self.cerrado = False
+			self.lower_spline = Spline(
+				self.points[self.le_idx + extra:] + [self.points[0]]
+			)
+			# self.closing_line = Line(
+			# 	self.points[-1], self.points[0]
+			# )
+			self.closing_line = None
 
 		with open("testing.txt", "w") as file:
 			for point in self.points:
@@ -535,7 +555,10 @@ class AirfoilSpline:
 		_ : int
 			return the tag of the CurveLoop object
 		"""
-		self.close_loop_tag = CurveLoop([self.upper_spline, self.lower_spline, self.closing_line]).tag
+		if self.cerrado:
+			self.close_loop_tag = CurveLoop([self.upper_spline, self.lower_spline]).tag
+		else:
+			self.close_loop_tag = CurveLoop([self.upper_spline, self.lower_spline, self.closing_line]).tag
 		return self.close_loop_tag
 
 	def define_bc(self):
@@ -547,11 +570,19 @@ class AirfoilSpline:
 		print([
 			self.upper_spline.tag,
 			self.lower_spline.tag,
-			self.closing_line.tag
+			# self.closing_line.tag
 		])
-
-		self.bc = gmsh.model.addPhysicalGroup(
-			self.dim, [self.upper_spline.tag,
+		if self.cerrado:
+			self.bc = gmsh.model.addPhysicalGroup(
+				self.dim, [
+								self.upper_spline.tag,
+								self.lower_spline.tag
+							]
+			)
+		else:
+			self.bc = gmsh.model.addPhysicalGroup(
+			self.dim, [
+							self.upper_spline.tag,
 							self.lower_spline.tag,
 							self.closing_line.tag
 						]

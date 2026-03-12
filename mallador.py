@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = "12"
+VersionAleron = "1"
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -15,7 +15,7 @@ airfoil_files = [
 	f"tests/alaTest{VersionAleron}/main.txt",
 	f"tests/alaTest{VersionAleron}/flap1.txt",
 	f"tests/alaTest{VersionAleron}/flap2.txt",
-	f"tests/alaTest{VersionAleron}/flap3.txt",
+	# f"tests/alaTest{VersionAleron}/flap3.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
@@ -23,11 +23,11 @@ airfoil_names = [
 	"main",
 	"flap1",
 	"flap2",
-	"flap3",
+	# "flap3",
 ]
 
 # Dirección del archivo de la malla
-output_path = f"tests/Su2tests/ala{VersionAleron}/"
+output_path = f"tests/Su2tests/ala{VersionAleron}_pruebaMalladorExp2/"
 
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
@@ -35,7 +35,7 @@ output_su2 = output_path + "airfoil_simple.su2"
 output_cgns = "airfoil_25D_fluentTest.cgns"
 output_openfoam = "airfoil_openfoam.msh"
 output_geom = "geom.step"
-output_file = output_su2
+output_file = output_msh
 
 
 ##############
@@ -48,7 +48,7 @@ usarSplines = True
 # gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
 preview_geometria = False
-preview_volumen = True
+preview_volumen = False
 
 # OPENFOAM 2D (extrusión 3D)
 export_openfoam_3D = False
@@ -88,10 +88,10 @@ mesh_size_airfoil = 0.001   # tamaño en el contorno del perfil
 #        Point         DistMin  DistMax
 
 distanciaMinRefinamiento = 0.02
-distanciaMaxRefinamiento = farfield_radius * 1
+distanciaMaxRefinamiento = farfield_radius * 0.5
 
 mesh_size_close =  0.001 # espesor_bl * 1.2  # tamaño cerca del ala
-farfield_mesh_size = 0.33      # tamaño lejos del ala
+farfield_mesh_size = 0.1      # tamaño lejos del ala
 
 mesh_size_estela = 0.1
 ###########################################################
@@ -131,10 +131,6 @@ gmsh.model.occ.synchronize()
 for airfoil in airfoils:
 	airfoil.gen_skin()
 
-if preview_geometria:
-	gmsh.model.occ.synchronize()
-	gmsh.fltk.run()
-
 # crear farfield
 if use_circle_farfield:
 	#ext_domain = gmsh.model.occ.addCircle(0, 0, 0, farfield_radius)
@@ -147,11 +143,16 @@ else:
 gmsh.model.occ.synchronize()
 surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_volumen)
 
-if mallaCuadrada:
-	gmsh.model.occ.mesh.setRecombine(2, surface.tag)
+if preview_geometria:
+	gmsh.model.occ.synchronize()
+	gmsh.fltk.run()
+
 
 gmsh.model.occ.synchronize()
 
+if mallaCuadrada:
+	gmsh.option.set_number("Mesh.RecombineMinimumQuality", 0.95)
+	gmsh.model.mesh.setRecombine(2, surface.tag, 85)
 
 # crear superficie con agujeros = outer_loop + todos los inner loops
 airfoil_curves = []
@@ -160,8 +161,10 @@ for airfoil in airfoils:
 		curv = [
 					airfoil.upper_spline.tag,
 					airfoil.lower_spline.tag,
-					airfoil.closing_line.tag
 				]
+		if not airfoil.cerrado:
+			curv.append(airfoil.closing_line.tag)
+		print("Curvs: ", curv)
 	else:
 		curv = [line.tag for line in airfoil.lines]
 
@@ -248,15 +251,20 @@ for airfoil in airfoils:
 	balls.append(ball)
 	balls.append(ball2)
 
-bolaEstela = gmsh.model.mesh.field.add("Ball")
-gmsh.model.mesh.field.setNumber(bolaEstela, "XCenter", airfoils[-2].te.x + 0.5)
-gmsh.model.mesh.field.setNumber(bolaEstela, "YCenter", airfoils[-2].te.y)
-gmsh.model.mesh.field.setNumber(bolaEstela, "ZCenter", airfoils[-2].te.z)
-gmsh.model.mesh.field.setNumber(bolaEstela, "Radius", 0.75)   # radio de influencia
-# TODO: Hacer un parámetro
-gmsh.model.mesh.field.setNumber(bolaEstela, "VIn", mesh_size_close * 10)    # tamaño mínimo dentro
+bolasEstela = []
+for i in range(0, 5):
+	extraOffsetX = i*farfield_radius/5
+	extraOffsetY = 0.075*i*farfield_radius/5
+	tamañoOffset = (i+1) * 1
+	bolaEstela = gmsh.model.mesh.field.add("Ball")
+	gmsh.model.mesh.field.setNumber(bolaEstela, "XCenter", airfoils[-2].te.x + 0.5 + extraOffsetX)
+	gmsh.model.mesh.field.setNumber(bolaEstela, "YCenter", airfoils[-2].te.y + extraOffsetY)
+	gmsh.model.mesh.field.setNumber(bolaEstela, "ZCenter", airfoils[-2].te.z)
+	gmsh.model.mesh.field.setNumber(bolaEstela, "Radius", 0.8)   # radio de influencia
+	# TODO: Hacer un parámetro
+	gmsh.model.mesh.field.setNumber(bolaEstela, "VIn", tamañoOffset * mesh_size_close * 10)    # tamaño mínimo dentro
 
-balls.append(bolaEstela)
+	balls.append(bolaEstela)
 
 combined = gmsh.model.mesh.field.add("Min")
 gmsh.model.mesh.field.setNumbers(combined, "FieldsList", [zonaRefinamiento] + balls)
@@ -266,7 +274,7 @@ gmsh.model.occ.synchronize()
 
 
 # gmsh.option.setNumber("Mesh.SaveAll", 0)
-# gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
+gmsh.option.setNumber("Mesh.SurfaceFaces", 1)
 #gmsh.option.setNumber("Mesh.Points", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromPoints", 1)
 #gmsh.option.setNumber("Mesh.MeshSizeFromCurvature", 0)
