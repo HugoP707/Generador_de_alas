@@ -35,6 +35,8 @@ def import_airfoil(filename, eps=1e-9):
 
 	print("Nº puntos limpios: ", len(clean))
 	# clean = coords
+
+	# Ahora gestionado en los Airfoils
 	# Si el primer y último son iguales, eliminar el último
 	# if abs(clean[0][0]-clean[-1][0]) < eps and abs(clean[0][1]-clean[-1][1]) < eps:
 	# 	clean.pop(0)
@@ -457,6 +459,7 @@ class AirfoilSpline:
 		self.points = []
 		# Generate Points object from the point_cloud
 		lenPtCloud = len(point_cloud)
+
 		eps = 1e-9
 		self.cerrado = None
 		if abs(point_cloud[0][0]-point_cloud[-1][0]) < eps and abs(point_cloud[0][1]-point_cloud[-1][1]) < eps:
@@ -619,6 +622,15 @@ class AirfoilMultiLine:
 		self.lines = []
 		# Generate Points object from the point_cloud
 		lenPtCloud = len(point_cloud) - 1
+
+		self.cerrado = None
+		if abs(point_cloud[0][0]-point_cloud[-1][0]) < eps and abs(point_cloud[0][1]-point_cloud[-1][1]) < eps:
+			# point_cloud.pop(0)
+			point_cloud.pop()
+			self.cerrado = True
+		else:
+			self.cerrado = False
+
 		for point_cord, i in zip(point_cloud, range(0, lenPtCloud)):
 			theta = i/lenPtCloud * 2*np.pi
 			print(theta)
