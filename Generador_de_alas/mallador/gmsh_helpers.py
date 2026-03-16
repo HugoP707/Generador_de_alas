@@ -621,8 +621,9 @@ class AirfoilMultiLine:
 		self.points = []
 		self.lines = []
 		# Generate Points object from the point_cloud
-		lenPtCloud = len(point_cloud) - 1
+		lenPtCloud = len(point_cloud)
 
+		eps = 1e-9
 		self.cerrado = None
 		if abs(point_cloud[0][0]-point_cloud[-1][0]) < eps and abs(point_cloud[0][1]-point_cloud[-1][1]) < eps:
 			# point_cloud.pop(0)

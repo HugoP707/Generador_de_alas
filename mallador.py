@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = "1"
+VersionAleron = "18"
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -15,7 +15,7 @@ airfoil_files = [
 	f"tests/alaTest{VersionAleron}/main.txt",
 	f"tests/alaTest{VersionAleron}/flap1.txt",
 	f"tests/alaTest{VersionAleron}/flap2.txt",
-	# f"tests/alaTest{VersionAleron}/flap3.txt",
+	f"tests/alaTest{VersionAleron}/flap3.txt",
 ]
 # Nombres de las boundaries de cada perfil (mismo orden que los archivos)
 # (el farfield se exporta como "farfield")
@@ -23,19 +23,24 @@ airfoil_names = [
 	"main",
 	"flap1",
 	"flap2",
-	# "flap3",
+	"flap3",
 ]
 
 # Dirección del archivo de la malla
-output_path = f"tests/Su2tests/ala{VersionAleron}_pruebaMalladorExp2/"
-
+output_path = f"tests/Su2tests/ala{VersionAleron}/"
+import os
+import shutil
+if not os.path.exists(output_path):
+	os.makedirs(output_path)
+shutil.copyfile("FLOW_VIEW.pvsm", f"{output_path}/FLOW_VIEW.pvsm")
+shutil.copyfile(f"su2nacatutorial{len(airfoil_names)}elems.cfg", f"{output_path}/su2nacatutorial{len(airfoil_names)}elems.cfg")
 # Nombre del archibo de la malla
 output_msh = "airfoil_simple.msh"
 output_su2 = output_path + "airfoil_simple.su2"
 output_cgns = "airfoil_25D_fluentTest.cgns"
 output_openfoam = "airfoil_openfoam.msh"
 output_geom = "geom.step"
-output_file = output_msh
+output_file = output_su2
 
 
 ##############
@@ -62,7 +67,7 @@ use_circle_farfield = False 	# True -> círculo, False -> caja
 farfield_radius = 6				# radio del dominio exterior (si usas círculo)
 circlex_offset = 2				# adelantar el perfil dentro del circulo
 
-tunnel_length = 10.0
+tunnel_length = 9.0
 tunnel_height = 6.0
 tunnelx_offset = 3			#adelantar el perfil dentro de la caja
 

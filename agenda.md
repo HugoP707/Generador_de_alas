@@ -31,3 +31,8 @@ en exceso en la curvatura del primer elemento.
 
 ### Version 12A(gresiva):
 - Solapamiento agresivo del ultimo elemento.
+
+### Ala 15
+![contorno-ala15](contorno-ala15.png)
+
+Con un ánuglo negativo del primer elemento se logra que la capa límite no se desprenda, por lo que siguiendo este estilo buscaré alguna combinación con mejores perfiles/angulos de los siguientes elementos

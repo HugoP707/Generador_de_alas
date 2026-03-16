@@ -2340,35 +2340,35 @@
         <Element index="1" value="0.05639999999999999"/>
         <Element index="2" value="0.05639999999999999"/>
         <Element index="3" value="0.47"/>
-        <Element index="4" value="0.4141044373963054"/>
+        <Element index="4" value="0.5147767182744268"/>
         <Element index="5" value="0.24300000000000013"/>
         <Element index="6" value="0.4603500000000004"/>
         <Element index="7" value="0.81"/>
-        <Element index="8" value="0.7203510343418761"/>
+        <Element index="8" value="0.8954744455182415"/>
         <Element index="9" value="0.3568143826543521"/>
         <Element index="10" value="0.7450246485363142"/>
         <Element index="11" value="0.954367702893722"/>
-        <Element index="12" value="1.042858512541194"/>
+        <Element index="12" value="1.2963862113767721"/>
         <Element index="13" value="0.6882"/>
         <Element index="14" value="0.93"/>
         <Element index="15" value="0.9179099999999999"/>
-        <Element index="16" value="1.2066525816797338"/>
+        <Element index="16" value="1.5"/>
         <Element index="17" value="0.8994959551205902"/>
         <Element index="18" value="0.944646394975174"/>
         <Element index="19" value="0.7686567142818399"/>
-        <Element index="20" value="1.4195689282530024"/>
+        <Element index="20" value="1.7646781059510221"/>
         <Element index="21" value="0.957107977357604"/>
         <Element index="22" value="0.8338185108985666"/>
         <Element index="23" value="0.5089156299842102"/>
-        <Element index="24" value="1.7041343501935773"/>
+        <Element index="24" value="2.1184237817085494"/>
         <Element index="25" value="0.9275207599610714"/>
         <Element index="26" value="0.6214389091739178"/>
         <Element index="27" value="0.31535705838676426"/>
-        <Element index="28" value="2.045612856522266"/>
+        <Element index="28" value="2.542918592617581"/>
         <Element index="29" value="0.8"/>
         <Element index="30" value="0.3520000000000001"/>
         <Element index="31" value="0.15999999999999998"/>
-        <Element index="32" value="2.4133051633594675"/>
+        <Element index="32" value="3"/>
         <Element index="33" value="0.59"/>
         <Element index="34" value="0.07670000000000013"/>
         <Element index="35" value="0.11947499999999994"/>
@@ -3252,7 +3252,7 @@
         <Element index="1" value="0"/>
         <Element index="2" value="0.5"/>
         <Element index="3" value="0"/>
-        <Element index="4" value="2.4133051633594675"/>
+        <Element index="4" value="3"/>
         <Element index="5" value="1"/>
         <Element index="6" value="0.5"/>
         <Element index="7" value="0"/>
@@ -4581,14 +4581,14 @@
     </Proxy>
     <Proxy group="extended_sources" type="HighResLineSource" id="13430" servers="1">
       <Property name="Point1" id="13430.Point1" number_of_elements="3">
-        <Element index="0" value="-1.8534405892754426"/>
-        <Element index="1" value="-1.1370576419383307"/>
+        <Element index="0" value="-0.8574688697877241"/>
+        <Element index="1" value="-0.6272149760100952"/>
         <Element index="2" value="0"/>
         <Domain name="range" id="13430.Point1.range"/>
       </Property>
       <Property name="Point2" id="13430.Point2" number_of_elements="3">
-        <Element index="0" value="-1.8671751890556227"/>
-        <Element index="1" value="1.355246884167295"/>
+        <Element index="0" value="-0.8356330510147715"/>
+        <Element index="1" value="0.9521154738984564"/>
         <Element index="2" value="0"/>
         <Domain name="range" id="13430.Point2.range"/>
       </Property>
@@ -15138,7 +15138,7 @@
         <Element index="0" value="{:&#x3c;#6.1e}"/>
       </Property>
       <Property name="DataRangeMax" id="13972.DataRangeMax" number_of_elements="1">
-        <Element index="0" value="2.1534737382588283"/>
+        <Element index="0" value="2.4087655141014124"/>
       </Property>
       <Property name="DataRangeMin" id="13972.DataRangeMin" number_of_elements="1">
         <Element index="0" value="0"/>
@@ -15846,11 +15846,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLUnstructuredGridReader" id="13273" servers="1">
       <Property name="FileName" id="13273.FileName" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala16/flow.vtu"/>
         <Domain name="files" id="13273.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="13273.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala16/flow.vtu"/>
       </Property>
       <Property name="TimestepValues" id="13273.TimestepValues"/>
       <Property name="CellArrayInfo" id="13273.CellArrayInfo"/>
@@ -15889,7 +15889,7 @@
         <Element index="28" value="Omega"/>
         <Element index="29" value="1"/>
       </Property>
-      <Property name="PointArrayStatus" id="13273.PointArrayStatus" number_of_elements="26">
+      <Property name="PointArrayStatus" id="13273.PointArrayStatus" number_of_elements="30">
         <Element index="0" value="Density"/>
         <Element index="1" value="1"/>
         <Element index="2" value="Eddy_Viscosity"/>
@@ -15916,6 +15916,10 @@
         <Element index="23" value="1"/>
         <Element index="24" value="Y_Plus"/>
         <Element index="25" value="1"/>
+        <Element index="26" value="Turb_Kin_Energy"/>
+        <Element index="27" value="1"/>
+        <Element index="28" value="Omega"/>
+        <Element index="29" value="1"/>
         <Domain name="array_list" id="13273.PointArrayStatus.array_list">
           <String text="Density"/>
           <String text="Eddy_Viscosity"/>
@@ -15944,11 +15948,11 @@
     </Proxy>
     <Proxy group="sources" type="CSVReader" id="14032" servers="1">
       <Property name="FileName" id="14032.FileName" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/history.csv"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala16/history.csv"/>
         <Domain name="files" id="14032.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="14032.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/history.csv"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala16/history.csv"/>
       </Property>
       <Property name="TimestepValues" id="14032.TimestepValues"/>
       <Property name="AddTabFieldDelimiter" id="14032.AddTabFieldDelimiter" number_of_elements="1">
@@ -15974,7 +15978,7 @@
         <Domain name="bool" id="14032.MergeConsecutiveDelimiters.bool"/>
       </Property>
       <Property name="Preview" id="14032.Preview" number_of_elements="1">
-        <Element index="0" value="&#x22;Inner_Iter&#x22;,    &#x22;Time(sec)&#x22;   ,     &#x22;rms[P]&#x22;     ,     &#x22;rms[U]&#x22;     ,     &#x22;rms[V]&#x22;     ,       &#x22;CD&#x22;       ,       &#x22;CL&#x22;       &#xd;&#xa;           0,             1.675,      -4.167592118,      -17.52860022,       -18.3924163,       8.001590559,      -3.989482181&#xd;&#xa;           1,            1.6045,      -4.444539751,      -4.009337088,      -4.221838575,       8.784780038,      -4.553634748&#xd;&#xa;           2,       1.558666667,      -4.619363413,      -4.331596491,      -4.494445562,        6.71286362,      -3.533138617&#xd;&#xa;           3,           1.55225,      -4.770890904,      -4.546705706,      -4.650426892,       5.384573166,      -2.892514335&#xd;&#xa;           4,            1.5512,      -5.017872893,      -4.566443357,      -4.657288716,        5.15720217,      -2.814106812&#xd;&#xa;           5,       1.554666667,      -5.048833296,      -4.610657156,      -4.684517204,       5.194362347,      -2.836881764&#xd;&#xa;           6,       1.553142857,      -5.061976595,      -4.585526966,      -4.665706781,       5.154312471,      -2.743567495&#xd;&#xa;           7,          1.556875,      -5.055840127,      -4.534631839,      -4.630498552,       5.050819854,       -2.51760734&#xd;&#xa;           8,       1.551555556,      -5.039585682,      -4.466016892,      -4.567275682,       4.986473658,      -2.337849517&#xd;&#xa;"/>
+        <Element index="0" value="&#x22;Inner_Iter&#x22;,    &#x22;Time(sec)&#x22;   ,     &#x22;rms[P]&#x22;     ,     &#x22;rms[U]&#x22;     ,     &#x22;rms[V]&#x22;     ,       &#x22;CD&#x22;       ,       &#x22;CL&#x22;       &#xd;&#xa;           0,             2.343,       -4.25635898,      -17.70526359,      -18.62012463,       5.126077048,     -0.4751685066&#xd;&#xa;           1,             2.305,      -4.447952493,      -4.094717674,      -4.352788359,       7.071259179,     -0.6992404298&#xd;&#xa;           2,       2.256666667,      -4.672184938,      -4.341300235,      -4.496787892,       5.415903861,     -0.5283286667&#xd;&#xa;           3,            2.2405,      -4.819476122,       -4.65064444,      -4.748929162,       4.475976735,     -0.4400568791&#xd;&#xa;           4,            2.2138,      -5.057367164,      -4.685786429,      -4.770127995,       4.526173048,     -0.4580334568&#xd;&#xa;           5,             2.191,      -5.096800128,      -4.745961168,      -4.812083055,       4.840890125,     -0.5044796371&#xd;&#xa;           6,       2.181142857,      -5.130398228,      -4.726822316,      -4.791770694,        5.09297454,      -0.540548174&#xd;&#xa;           7,           2.17175,      -5.150326764,       -4.70285955,      -4.759329291,       5.246958025,     -0.5548287869&#xd;&#xa;           8,       2.161222222,      -5.155397372,      -4.669561428,      -4.722542343,       5.316430451,     -0.5541116605&#xd;&#xa;"/>
       </Property>
       <Property name="SkippedLines" id="14032.SkippedLines" number_of_elements="1">
         <Element index="0" value="0"/>
@@ -15987,11 +15991,11 @@
     </Proxy>
     <Proxy group="sources" type="XMLUnstructuredGridReader" id="13689" servers="1">
       <Property name="FileName" id="13689.FileName" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/surface_flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala16/surface_flow.vtu"/>
         <Domain name="files" id="13689.FileName.files"/>
       </Property>
       <Property name="FileNameInfo" id="13689.FileNameInfo" number_of_elements="1">
-        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala12A/surface_flow.vtu"/>
+        <Element index="0" value="D:/FSAE/FSAE/UMX/Generador_de_alas/tests/Su2tests/ala16/surface_flow.vtu"/>
       </Property>
       <Property name="TimestepValues" id="13689.TimestepValues"/>
       <Property name="CellArrayInfo" id="13689.CellArrayInfo"/>
@@ -16468,7 +16472,7 @@
       </Property>
       <Property name="Range" id="13373.Range" number_of_elements="4">
         <Element index="0" value="0"/>
-        <Element index="1" value="2.5"/>
+        <Element index="1" value="3"/>
         <Element index="2" value="0"/>
         <Element index="3" value="1"/>
       </Property>
@@ -16621,7 +16625,7 @@
         <Domain name="bool" id="14099.BottomAxisLogScale.bool"/>
       </Property>
       <Property name="BottomAxisRangeMaximum" id="14099.BottomAxisRangeMaximum" number_of_elements="1">
-        <Element index="0" value="550"/>
+        <Element index="0" value="1000"/>
       </Property>
       <Property name="BottomAxisRangeMinimum" id="14099.BottomAxisRangeMinimum" number_of_elements="1">
         <Element index="0" value="0"/>
@@ -17137,7 +17141,7 @@
         <Domain name="bool" id="14099.UseCache.bool"/>
       </Property>
       <Property name="ViewSize" id="14099.ViewSize" number_of_elements="2">
-        <Element index="0" value="775"/>
+        <Element index="0" value="577"/>
         <Element index="1" value="780"/>
       </Property>
       <Property name="ViewTime" id="14099.ViewTime" number_of_elements="1">
@@ -17357,10 +17361,10 @@
         <Domain name="bool" id="14135.LeftAxisLogScale.bool"/>
       </Property>
       <Property name="LeftAxisRangeMaximum" id="14135.LeftAxisRangeMaximum" number_of_elements="1">
-        <Element index="0" value="5.538071669784554"/>
+        <Element index="0" value="-9"/>
       </Property>
       <Property name="LeftAxisRangeMinimum" id="14135.LeftAxisRangeMinimum" number_of_elements="1">
-        <Element index="0" value="-5.9144861276794245"/>
+        <Element index="0" value="2"/>
       </Property>
       <Property name="LeftAxisTitle" id="14135.LeftAxisTitle" number_of_elements="1">
         <Element index="0" value=""/>
@@ -17440,7 +17444,7 @@
         </Domain>
       </Property>
       <Property name="LegendPosition" id="14135.LegendPosition" number_of_elements="2">
-        <Element index="0" value="1386"/>
+        <Element index="0" value="990"/>
         <Element index="1" value="738"/>
       </Property>
       <Property name="LegendSymbolWidth" id="14135.LegendSymbolWidth" number_of_elements="1">
@@ -17720,7 +17724,7 @@
         <Domain name="bool" id="14135.UseCache.bool"/>
       </Property>
       <Property name="ViewSize" id="14135.ViewSize" number_of_elements="2">
-        <Element index="0" value="1560"/>
+        <Element index="0" value="1164"/>
         <Element index="1" value="780"/>
       </Property>
       <Property name="ViewTime" id="14135.ViewTime" number_of_elements="1">
@@ -18395,7 +18399,7 @@
         <Domain name="bool" id="14030.UseToneMapping.bool"/>
       </Property>
       <Property name="ViewSize" id="14030.ViewSize" number_of_elements="2">
-        <Element index="0" value="775"/>
+        <Element index="0" value="577"/>
         <Element index="1" value="780"/>
       </Property>
       <Property name="ViewTime" id="14030.ViewTime" number_of_elements="1">
@@ -18421,29 +18425,29 @@
         <Element index="0" value="0"/>
       </Property>
       <Property name="CameraFocalPoint" id="14030.CameraFocalPoint" number_of_elements="3">
-        <Element index="0" value="0.5440240132783957"/>
-        <Element index="1" value="-0.092162731214159"/>
+        <Element index="0" value="0.5540103720046042"/>
+        <Element index="1" value="0.0034497029911044106"/>
         <Element index="2" value="0"/>
       </Property>
       <Property name="CameraFocalPointInfo" id="14030.CameraFocalPointInfo" number_of_elements="3">
-        <Element index="0" value="0.5440240132783957"/>
-        <Element index="1" value="-0.092162731214159"/>
+        <Element index="0" value="0.5540103720046042"/>
+        <Element index="1" value="0.0034497029911044106"/>
         <Element index="2" value="0"/>
       </Property>
       <Property name="CameraParallelScale" id="14030.CameraParallelScale" number_of_elements="1">
-        <Element index="0" value="1.368416680819816"/>
+        <Element index="0" value="1.1927224695097114"/>
       </Property>
       <Property name="CameraParallelScaleInfo" id="14030.CameraParallelScaleInfo" number_of_elements="1">
-        <Element index="0" value="1.368416680819816"/>
+        <Element index="0" value="1.1927224695097114"/>
       </Property>
       <Property name="CameraPosition" id="14030.CameraPosition" number_of_elements="3">
-        <Element index="0" value="0.5440240132783957"/>
-        <Element index="1" value="-0.092162731214159"/>
+        <Element index="0" value="0.5540103720046042"/>
+        <Element index="1" value="0.0034497029911044106"/>
         <Element index="2" value="29.989822267076033"/>
       </Property>
       <Property name="CameraPositionInfo" id="14030.CameraPositionInfo" number_of_elements="3">
-        <Element index="0" value="0.5440240132783957"/>
-        <Element index="1" value="-0.092162731214159"/>
+        <Element index="0" value="0.5540103720046042"/>
+        <Element index="1" value="0.0034497029911044106"/>
         <Element index="2" value="29.989822267076033"/>
       </Property>
       <Property name="CameraViewAngle" id="14030.CameraViewAngle" number_of_elements="1">
@@ -18724,8 +18728,8 @@
           <Property source_property="SelectionColor" target_id="14087" target_property="Color" unlink_if_modified="1"/>
           <Property source_property="TextAnnotationColor" target_id="14027" target_property="LabelColor" unlink_if_modified="1"/>
           <Property source_property="TextAnnotationColor" target_id="14027" target_property="TitleColor" unlink_if_modified="1"/>
-          <Property source_property="ForegroundColor" target_id="17408" target_property="ForegroundWidgetColor" unlink_if_modified="1"/>
-          <Property source_property="InteractiveWidgetColor" target_id="17408" target_property="InteractiveWidgetColor" unlink_if_modified="1"/>
+          <Property source_property="ForegroundColor" target_id="17409" target_property="ForegroundWidgetColor" unlink_if_modified="1"/>
+          <Property source_property="InteractiveWidgetColor" target_id="17409" target_property="InteractiveWidgetColor" unlink_if_modified="1"/>
         </Links>
       </SettingsProxy>
       <SettingsProxy group="settings" type="GeneralSettings">
