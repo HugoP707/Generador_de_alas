@@ -59,7 +59,7 @@ elem4U, elem4L = naca1317U, naca1317L
 C0 = None
 C1 = 1
 C2 = C1*3/4
-C3 = C1*2/4
+C3 = C1*2/4 # = C2*1/3
 C4 = C1*2/4
 
 print("Cuerdas: ")
