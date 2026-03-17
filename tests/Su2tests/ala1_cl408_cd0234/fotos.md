@@ -1,1 +1,0 @@
-![contorno-velocidad](contorno-velocidad.png)

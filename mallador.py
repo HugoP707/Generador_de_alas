@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = "18"
+VersionAleron = "18v3"
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -52,7 +52,7 @@ usarSplines = True
 
 # gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = False
+preview_geometria = True
 preview_volumen = False
 
 # OPENFOAM 2D (extrusión 3D)
@@ -136,6 +136,10 @@ gmsh.model.occ.synchronize()
 for airfoil in airfoils:
 	airfoil.gen_skin()
 
+if preview_geometria:
+	gmsh.model.occ.synchronize()
+	gmsh.fltk.run()
+
 # crear farfield
 if use_circle_farfield:
 	#ext_domain = gmsh.model.occ.addCircle(0, 0, 0, farfield_radius)
@@ -147,11 +151,6 @@ else:
 
 gmsh.model.occ.synchronize()
 surface = PlaneSurface([ext_domain] + airfoils, preview_geom=preview_volumen)
-
-if preview_geometria:
-	gmsh.model.occ.synchronize()
-	gmsh.fltk.run()
-
 
 gmsh.model.occ.synchronize()
 

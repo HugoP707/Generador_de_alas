@@ -50,7 +50,7 @@ class Alerón:
 		currentx, currenty = 0, 0
 		for i in range(0, len(self.foils)-1):
 			current = self.foils[i]
-			print(self.gaps[i][0], self.gaps[i][1])
+			# print(self.gaps[i][0], self.gaps[i][1])
 			currentx += (current.cuerda * np.cos(np.deg2rad(current.aoa))) + self.gaps[i][0]
 			currenty += (current.cuerda * np.sin(np.deg2rad(current.aoa))) + self.gaps[i][1]
 			self.foils[i+1].translate(currentx, currenty)
