@@ -6,7 +6,7 @@ import gmsh
 from Generador_de_alas.mallador.gmsh_helpers import *
 
 
-VersionAleron = "18v3"
+VersionAleron = "12v4"
 # ---------------------------
 # Configuración (ajusta)
 # ---------------------------
@@ -52,7 +52,7 @@ usarSplines = True
 
 # gmsh.option.setNumber("Geometry.Tolerance", 1e-6)
 # Más que nada para revisar cosas, no hace falta si no te da errores
-preview_geometria = True
+preview_geometria = False
 preview_volumen = False
 
 # OPENFOAM 2D (extrusión 3D)
@@ -93,7 +93,7 @@ mesh_size_airfoil = 0.001   # tamaño en el contorno del perfil
 #        Point         DistMin  DistMax
 
 distanciaMinRefinamiento = 0.02
-distanciaMaxRefinamiento = farfield_radius * 0.5
+distanciaMaxRefinamiento = farfield_radius * 0.5#2/3
 
 mesh_size_close =  0.001 # espesor_bl * 1.2  # tamaño cerca del ala
 farfield_mesh_size = 0.1      # tamaño lejos del ala
